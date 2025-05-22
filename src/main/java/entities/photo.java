@@ -4,27 +4,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.Date;
 
 @Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
 @Entity
-public class shoppingHistory {
+public class photo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int historyId;
-    private Date dateTime;
-    private int quantity;
-    private String status;
-    private String purchaseUUID;
+    private int photoID;
+    private String photoValue;
     private product product;
-    private customer customer;
+
 
 }

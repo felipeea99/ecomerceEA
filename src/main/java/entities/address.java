@@ -9,22 +9,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class shoppingHistory {
+public class address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int historyId;
-    private Date dateTime;
-    private int quantity;
-    private String status;
-    private String purchaseUUID;
-    private product product;
-    private customer customer;
-
+    private int addressId;
+    private String country;
+    private String street;
+    private String number;
+    private String colony;
+    private String town;
 }

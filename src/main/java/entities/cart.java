@@ -9,22 +9,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
-
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
-public class shoppingHistory {
+public class cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int historyId;
-    private Date dateTime;
+    private int cartId;
     private int quantity;
-    private String status;
-    private String purchaseUUID;
+    private boolean isCompleted;
     private product product;
     private customer customer;
-
 }

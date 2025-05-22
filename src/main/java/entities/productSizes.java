@@ -9,22 +9,17 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class shoppingHistory {
+public class productSizes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int historyId;
-    private Date dateTime;
-    private int quantity;
-    private String status;
-    private String purchaseUUID;
-    private product product;
-    private customer customer;
-
+    private int productSizeId;
+    private double price;
+    private boolean isActive;
+    private size size;
+    private productMultiPrice productMultiPrice;
 }

@@ -2,6 +2,7 @@ package com.ecommerce.ea.services;
 
 
 import com.ecommerce.ea.entities.Product;
+import com.ecommerce.ea.exceptions.BadRequestException;
 import com.ecommerce.ea.interfaces.IProduct;
 import com.ecommerce.ea.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,13 @@ public class ProductService implements IProduct {
 
     @Override
     public CompletableFuture<Product> EditProduct(Product product) {
+        Product productObj = productRepository.findById(product.getProductId()).orElseThrow(() -> new BadRequestException("productId was not found on the database"));
+
+        productObj.setProductName(product.getProductName());
+        productObj.setCategory(product.getCategory());
+        productObj.setStore(product.getStore());
+        productObj.setActive(product.isActive());
+
         return null;
     }
 

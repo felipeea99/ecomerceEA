@@ -50,6 +50,7 @@ public class CategoryService implements ICategory {
 
     @Override
     public CompletableFuture<Category> EditCategory(Category category) {
+
         int categoryId = category.getCategoryId();
 
         Category categoryObj = categoryRepository.findById(categoryId)

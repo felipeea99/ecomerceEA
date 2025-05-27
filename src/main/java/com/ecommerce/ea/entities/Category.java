@@ -1,10 +1,10 @@
-package entities;
+package com.ecommerce.ea.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,13 +12,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
-public class size {
+public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int sizeId;
-    @NotNull
-    private String size;
+    private int categoryId;
+    @NotBlank(message = "category name should not be empty")
+    private String categoryName;
 }

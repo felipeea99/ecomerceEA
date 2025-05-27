@@ -1,20 +1,20 @@
-package entities;
+package com.ecommerce.ea.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.security.core.userdetails.User;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Entity
-public class store {
+public class Store {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String storeID;
@@ -24,8 +24,8 @@ public class store {
     @Email
     private String storeEmail;
     @NotNull
-    private User user;
+    @ManyToOne
+    @JoinColumn(name = "userId")
+    private UserAcc user;
 
-    public store() {
-    }
 }

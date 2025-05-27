@@ -1,10 +1,9 @@
-package entities;
+package com.ecommerce.ea.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,14 +12,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
-@AllArgsConstructor
 @NoArgsConstructor
-public class customer {
+@AllArgsConstructor
+@Entity
+public class Size {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String customerId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int sizeId;
     @NotNull
-    private user user;
-
+    private String size;
 }

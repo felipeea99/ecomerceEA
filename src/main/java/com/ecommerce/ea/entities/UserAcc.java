@@ -1,11 +1,9 @@
-package entities;
+package com.ecommerce.ea.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,13 +11,15 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class user {
+@Entity
+public class UserAcc {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String userId;
+    @NotBlank
+    private String name;
     @NotBlank
     private String userName;
     @NotBlank
@@ -33,4 +33,7 @@ public class user {
     private String email;
     @NotBlank
     private String phoneNumber;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private RoleType role;
 }

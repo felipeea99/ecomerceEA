@@ -1,10 +1,7 @@
-package entities;
+package com.ecommerce.ea.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,16 +13,19 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-public class cart {
+public class Cart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int cartId;
-    @NotBlank
+    @Min(1)
     private int quantity;
-    @NotBlank
     private boolean isCompleted;
     @NotNull
-    private product product;
+    @ManyToOne
+    @JoinColumn(name = "productId")
+    private Product product;
     @NotNull
-    private customer customer;
+    @ManyToOne
+    @JoinColumn(name = "customerId")
+    private Customer customer;
 }

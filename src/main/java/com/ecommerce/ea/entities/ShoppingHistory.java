@@ -1,9 +1,7 @@
-package entities;
+package com.ecommerce.ea.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -18,22 +16,26 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-public class shoppingHistory {
+public class ShoppingHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int historyId;
     @NotBlank
     private Date dateTime;
-    @NotBlank
+    @Min(0)
     private int quantity;
     @NotBlank
     private String status;
     @NotBlank
     private String purchaseUUID;
     @NotNull
-    private product product;
+    @ManyToOne
+    @JoinColumn(name = "productId")
+    private Product product;
     @NotNull
-    private customer customer;
+    @ManyToOne
+    @JoinColumn(name = "customerId")
+    private Customer customer;
     @NotBlank
     private String paymentProviderId;
 }

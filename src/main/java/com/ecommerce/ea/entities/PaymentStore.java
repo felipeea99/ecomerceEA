@@ -1,9 +1,6 @@
-package entities;
+package com.ecommerce.ea.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -18,14 +15,16 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class paymentStore {
+public class PaymentStore {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int storePaidId;
     @NotBlank
     private Date date;
     @NotBlank
-    private store store;
+    @ManyToOne
+    @JoinColumn(name = "storeId")
+    private Store store;
     @NotBlank
     @Min(0)
     private double amount;

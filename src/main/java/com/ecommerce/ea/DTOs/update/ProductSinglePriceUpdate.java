@@ -1,7 +1,5 @@
-package com.ecommerce.ea.entities;
+package com.ecommerce.ea.DTOs.update;
 
-
-import jakarta.persistence.Entity;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,11 +8,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@Entity
-@AllArgsConstructor
 @NoArgsConstructor
-public class ProductSinglePrice extends Product {
+@AllArgsConstructor
+public class ProductSinglePriceUpdate extends ProductUpdate {
     @Min(0)
     private double price;
-
 }

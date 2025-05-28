@@ -61,8 +61,24 @@ public class CartService implements ICart {
 
     @Override
     public CompletableFuture<Void> operationsInCart(int cartID, boolean isIncrement) {
-        return null;
+        return CompletableFuture.supplyAsync(() -> cartRepository.findById(cartID)
+                .orElseThrow(() -> new BadRequestException("CartId was not found on the database"))
+        ).thenCompose(cart -> {
+            if (!isIncrement) {
+                if (cart.getQuantity() > 1) {
+                    cart.setQuantity(cart.getQuantity() - 1);
+                    return editCart(cart).thenApply(c -> null);
+                } else {
+                    return deleteCart(cartID).thenApply(b -> null);
+                }
+            } else {
+                cart.setQuantity(cart.getQuantity() + 1);
+                return editCart(cart).thenApply(c -> null);
+            }
+        });
     }
+
+
 
     @Override
     public CompletableFuture<Void> cartProcessCompleted(UUID userId, int addressID) {

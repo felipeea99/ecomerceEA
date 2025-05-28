@@ -1,6 +1,6 @@
 package com.ecommerce.ea.services;
 
-import com.ecommerce.ea.DTOs.LoginDTO;
+import com.ecommerce.ea.DTOs.response.LoginDTO;
 import com.ecommerce.ea.entities.UserAcc;
 import com.ecommerce.ea.interfaces.IUserAcc;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +10,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Locale;
 
 @Service
 public class UserAccService {

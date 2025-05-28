@@ -15,6 +15,7 @@ public class Photo {
     private int photoID;
     @NotBlank
     private String photoValue;
+    private int index;
     @NotNull
     @ManyToOne
     @JoinColumn(name = "productId")

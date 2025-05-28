@@ -1,6 +1,6 @@
 package com.ecommerce.ea.controllers;
 
-import com.ecommerce.ea.DTOs.LoginDTO;
+import com.ecommerce.ea.DTOs.response.LoginDTO;
 import com.ecommerce.ea.entities.UserAcc;
 import com.ecommerce.ea.services.UserAccService;
 import org.springframework.beans.factory.annotation.Autowired;

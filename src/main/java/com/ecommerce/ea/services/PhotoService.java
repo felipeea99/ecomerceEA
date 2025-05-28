@@ -53,17 +53,27 @@ public class PhotoService implements IPhoto {
     @Override
     public CompletableFuture<List<Photo>> GetAllPhotosByProductID(int productID) {
         productRepository.findById(productID).orElseThrow(() -> new NullPointerException("productId was not found on the database"));
-
-        CompletableFuture<List<Photo>> photosList = photoRepository.findAllPhotosByProductId(productID);
-
-
-        return null;
-
+        return photoRepository.findAllPhotosByProductId(productID);
     }
 
     @Override
     public CompletableFuture<Void> PhotoOrder(int productID) {
-        return null;
+        return CompletableFuture.runAsync(() -> {
+            if (productID == 0) {
+                throw new IllegalArgumentException("ProductID is empty");
+            }
+
+            List<Photo> photosList = photoRepository.findByProductIDOrderByPhotosID(productID);
+
+            for (int index = 0; index < photosList.size(); index++) {
+                Photo photo = photosList.get(index);
+                if (photo.getIndex() != index) {
+                    photo.setIndex(index);
+                }
+            }
+
+            photoRepository.saveAll(photosList);
+        });
     }
 
     @Override

@@ -1,9 +1,5 @@
-package com.ecommerce.ea.entities;
+package com.ecommerce.ea.DTOs.request;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -14,13 +10,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-@Entity
-public class Address {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int addressId;
+@NoArgsConstructor
+public class AddressRequest {
     @NotBlank(message = "country is mandatory")
     @Size(min = 4)
     private String country;
@@ -33,4 +25,3 @@ public class Address {
     @NotBlank(message = "town is mandatory")
     private String town;
 }
-

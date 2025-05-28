@@ -1,4 +1,4 @@
-package com.ecommerce.ea.DTOs;
+package com.ecommerce.ea.DTOs.response;
 
 
 import jakarta.validation.constraints.Email;

@@ -1,5 +1,6 @@
 package com.ecommerce.ea.DTOs.request;
 
+import com.ecommerce.ea.entities.ShoppingHistory;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -37,4 +38,17 @@ public class ShoppingHistoryRequest {
 
     @NotBlank(message = "paymentProviderId is mandatory")
     private String paymentProviderId;
+
+    public ShoppingHistory ToShoppingHistoryObj(){
+        ShoppingHistory shoppingHistory = new ShoppingHistory();
+        shoppingHistory.setDateTime(dateTime);
+        shoppingHistory.setCustomer(shoppingHistory.getCustomer());
+        shoppingHistory.setProduct(shoppingHistory.getProduct());
+        shoppingHistory.setStatus(status);
+        shoppingHistory.setQuantity(quantity);
+        shoppingHistory.setPurchaseUUID(purchaseUUID);
+        shoppingHistory.setPaymentProviderId(paymentProviderId);
+
+        return shoppingHistory;
+    }
 }

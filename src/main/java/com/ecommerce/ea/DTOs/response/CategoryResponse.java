@@ -1,11 +1,24 @@
 package com.ecommerce.ea.DTOs.response;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotBlank;
+import com.ecommerce.ea.entities.Category;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class CategoryResponse {
     private int categoryId;
     private String categoryName;
+
+    public static CategoryResponse ToCategoryResponseObj(Category category){
+        return new CategoryResponse(
+                category.getCategoryId(),
+                category.getCategoryName()
+        );
+    }
 }
+

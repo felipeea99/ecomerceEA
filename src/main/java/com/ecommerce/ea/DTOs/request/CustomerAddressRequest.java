@@ -1,5 +1,6 @@
 package com.ecommerce.ea.DTOs.request;
 
+import com.ecommerce.ea.entities.CustomerAddress;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,4 +19,10 @@ public class CustomerAddressRequest {
     @NotNull(message = "addressId is mandatory")
     private Integer addressId;
 
+    public CustomerAddress ToCustomerAddressObj(){
+        CustomerAddress customerAddress = new CustomerAddress();
+        this.setCustomerId(customerId);
+        this.setAddressId(addressId);
+        return customerAddress;
+    }
 }

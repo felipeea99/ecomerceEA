@@ -1,5 +1,8 @@
 package com.ecommerce.ea.DTOs.response;
 
+import com.ecommerce.ea.entities.Customer;
+import com.ecommerce.ea.entities.Product;
+import com.ecommerce.ea.entities.ShoppingHistory;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,8 +20,22 @@ public class ShoppingHistoryResponse {
     private int quantity;
     private String status;
     private String purchaseUUID;
-    private ProductResponse product;
-    private CustomerResponse customer;
+    private Product productId;
+    private Customer customerId;
     private String paymentProviderId;
+
+    private static ShoppingHistoryResponse ToShoppingHistoryResponse(ShoppingHistory shoppingHistory){
+        return new ShoppingHistoryResponse(
+                shoppingHistory.getHistoryId(),
+                shoppingHistory.getDateTime(),
+                shoppingHistory.getQuantity(),
+                shoppingHistory.getStatus(),
+                shoppingHistory.getPurchaseUUID(),
+                shoppingHistory.getProduct(),
+                shoppingHistory.getCustomer(),
+                shoppingHistory.getPaymentProviderId()
+        );
+    }
+
 }
 

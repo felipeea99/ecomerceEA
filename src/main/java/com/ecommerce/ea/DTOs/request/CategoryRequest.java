@@ -1,5 +1,6 @@
 package com.ecommerce.ea.DTOs.request;
 
+import com.ecommerce.ea.entities.Category;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.Min;
@@ -18,4 +19,10 @@ public class CategoryRequest {
     private int categoryId;
     @NotBlank(message = "category name should not be empty")
     private String categoryName;
+
+    public Category ToCategoryObj(){
+        Category category = new Category();
+        category.setCategoryName(this.categoryName);
+        return category;
+    }
 }

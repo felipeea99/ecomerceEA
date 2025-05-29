@@ -1,5 +1,8 @@
 package com.ecommerce.ea.services;
 
+import com.ecommerce.ea.DTOs.request.AddressRequest;
+import com.ecommerce.ea.DTOs.response.AddressResponse;
+import com.ecommerce.ea.DTOs.update.AddressUpdate;
 import com.ecommerce.ea.entities.Address;
 import com.ecommerce.ea.exceptions.BadRequestException;
 import com.ecommerce.ea.interfaces.IAddress;
@@ -10,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class AddressService implements IAddress {
 
@@ -22,28 +27,41 @@ public class AddressService implements IAddress {
     }
 
     @Override
-    public CompletableFuture<Address> GetAddressById(int addressId) {
+    public CompletableFuture<AddressResponse> GetAddressById(int addressId) {
 
+        //Search it and stores it on the variable
         Address addressObj = addressRepository.findById(addressId)
                 .orElseThrow(() -> new BadRequestException("addressId was not found on the database"));
+        //Convert it to AddressResponse
+        AddressResponse addressResponse = AddressResponse.toAddressResponseObj(addressObj);
 
-        return CompletableFuture.completedFuture(addressObj);
+        return CompletableFuture.completedFuture(addressResponse);
     }
 
     @Override
-    public CompletableFuture<List<Address>> GetListAddressesByUserId(UUID userId) {
-
+    public CompletableFuture<List<AddressResponse>> GetListAddressesByUserId(UUID userId) {
         //userId validation
         userRepository.findById(userId).orElseThrow(() -> new BadRequestException("userId was not found on the database"));
-        //retrieve the list of addresses
-       return addressRepository.findAllAddressesByUserIdAsync(userId);
+        //retrieve the list of addresses, then once is ready apply the stream to enable functional methods, to be available to map them, then collect them in a list
+        return addressRepository.findAllAddressesByUserIdAsync(userId)
+                .thenApply(addressList ->
+                        addressList.stream()
+                                .map(AddressResponse::toAddressResponseObj)
+                                .collect(Collectors.toList())
+                );
     }
 
     @Transactional
     @Override
-    public CompletableFuture<Address> AddAddress(Address address) {
-        Address addressObj = addressRepository.save(address);
-        return CompletableFuture.completedFuture(addressObj);
+    public CompletableFuture<AddressResponse> AddAddress(AddressRequest addressRequest) {
+        //Convert it to Address Object
+        Address addressObj =  addressRequest.ToAddressObj();
+        //Save it and stores it on the variable
+        Address addressSaved = addressRepository.save(addressObj);
+        //Convert it to Response
+        AddressResponse addressResponse = AddressResponse.toAddressResponseObj(addressSaved);
+
+        return CompletableFuture.completedFuture(addressResponse);
     }
 
     @Override
@@ -58,19 +76,21 @@ public class AddressService implements IAddress {
     }
 
     @Override
-    public CompletableFuture<Address> EditAddress(Address address) {
-
-       Address addressObj =  addressRepository.findById(address.getAddressId())
+    public CompletableFuture<AddressResponse> EditAddress(AddressUpdate addressUpdate) {
+        //AddressId validation
+       Address addressObj =  addressRepository.findById(addressUpdate.getAddressId())
                .orElseThrow(() -> new BadRequestException("AddressId was not found on the database"));
+       //Make the changes
+       addressObj.setTown(addressUpdate.getTown());
+       addressObj.setColony(addressUpdate.getColony());
+       addressObj.setStreet(addressUpdate.getStreet());
+       addressObj.setCountry(addressUpdate.getCountry());
+       addressObj.setNumber(addressUpdate.getNumber());
+       //Save changes
+       Address addressSaved = addressRepository.save(addressObj);
 
-       addressObj.setTown(address.getTown());
-       addressObj.setColony(address.getColony());
-       addressObj.setStreet(address.getStreet());
-       addressObj.setCountry(address.getCountry());
-       addressObj.setNumber(address.getNumber());
+       AddressResponse addressResponse = AddressResponse.toAddressResponseObj(addressSaved);
 
-       addressRepository.save(addressObj);
-
-        return CompletableFuture.completedFuture(addressObj);
+        return CompletableFuture.completedFuture(addressResponse);
     }
 }

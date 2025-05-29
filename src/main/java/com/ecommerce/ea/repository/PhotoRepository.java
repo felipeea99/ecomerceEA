@@ -1,5 +1,6 @@
 package com.ecommerce.ea.repository;
 
+import com.ecommerce.ea.DTOs.response.PhotoResponse;
 import com.ecommerce.ea.entities.Photo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.scheduling.annotation.Async;
@@ -11,6 +12,6 @@ public interface PhotoRepository extends JpaRepository<Photo, Number> {
     @Async
     CompletableFuture<List<Photo>> findAllPhotosByProductId(int productId);
     List<Photo> findByProductIDOrderByPhotosID(int productID);
-    Photo findByIndex(int zero);
+    CompletableFuture<List<Photo>> findByIndex(int index);
 
 }

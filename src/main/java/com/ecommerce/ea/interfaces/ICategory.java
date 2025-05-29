@@ -1,15 +1,16 @@
 package com.ecommerce.ea.interfaces;
 
-import com.ecommerce.ea.entities.Category;
-import org.springframework.scheduling.annotation.Async;
+import com.ecommerce.ea.DTOs.request.CategoryRequest;
+import com.ecommerce.ea.DTOs.response.CategoryResponse;
+import com.ecommerce.ea.DTOs.update.CategoryUpdate;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface ICategory {
-    CompletableFuture<List<Category>> GetAllCategories();
-    CompletableFuture<Category> GetCategoryByID(int categoryID);
+    CompletableFuture<List<CategoryResponse>> GetAllCategories();
+    CompletableFuture<CategoryResponse> GetCategoryByID(int categoryID);
     CompletableFuture<Boolean> DeleteCategoryByID(int categoryID);
-    CompletableFuture<Category> AddCategory(Category category );
-    CompletableFuture<Category> EditCategory(Category category);
+    CompletableFuture<CategoryResponse> AddCategory(CategoryRequest categoryRequest );
+    CompletableFuture<CategoryResponse> EditCategory(CategoryUpdate categoryUpdate);
 }

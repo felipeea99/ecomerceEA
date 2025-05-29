@@ -1,5 +1,6 @@
 package com.ecommerce.ea.DTOs.request;
 
+import com.ecommerce.ea.entities.Cart;
 import com.ecommerce.ea.entities.Customer;
 import com.ecommerce.ea.entities.Product;
 import jakarta.persistence.JoinColumn;
@@ -23,4 +24,13 @@ public class CartRequest {
     private Product product;
     @NotNull
     private Customer customer;
+
+    public Cart ToCartObj() {
+        Cart cart = new Cart();
+        cart.setQuantity(this.quantity);
+        cart.setCompleted(this.isCompleted);
+        cart.setProduct(this.product);
+        cart.setCustomer(this.customer);
+        return cart;
+    }
 }

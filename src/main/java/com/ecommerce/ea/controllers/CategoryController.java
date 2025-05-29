@@ -1,5 +1,7 @@
 package com.ecommerce.ea.controllers;
 
+import com.ecommerce.ea.DTOs.request.CategoryRequest;
+import com.ecommerce.ea.DTOs.response.CategoryResponse;
 import com.ecommerce.ea.entities.Category;
 import com.ecommerce.ea.entities.Product;
 import com.ecommerce.ea.services.CategoryService;
@@ -24,8 +26,8 @@ public class CategoryController {
     }
 
     @PostMapping("/addCategory")
-    public CompletableFuture<Category> addCategory(@Valid @RequestBody Category category){
-        return this.categoryService.AddCategory(category);
+    public CompletableFuture<CategoryResponse> addCategory(@Valid @RequestBody CategoryRequest categoryRequest){
+        return this.categoryService.AddCategory(categoryRequest);
     }
 
     //Generate the CSRF-TOKEN

@@ -13,6 +13,6 @@ public class ProductResponse {
     private int productId;
     private String productName;
     private boolean isActive;
-    private int storeId;
+    private String storeId;
     private int categoryId;
 }

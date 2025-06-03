@@ -9,6 +9,7 @@ import com.ecommerce.ea.interfaces.ICategory;
 import com.ecommerce.ea.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -24,57 +25,49 @@ public class CategoryService implements ICategory {
     }
 
     @Override
-    public CompletableFuture<List<CategoryResponse>> GetAllCategories() {
+    public Mono<List<CategoryResponse>> GetAllCategories() {
         //Retrieve all the categories objects from the database
-        CompletableFuture<List<Category>> categoryList = categoryRepository.findAllAsync();
+        Mono<List<Category>> categoryList = categoryRepository.findAllAsync();
         //Convert each element into CompletableFuture<List<CategoryResponse>>
-        return categoryList.thenApply(category -> category.stream().map(CategoryResponse::ToCategoryResponseObj).collect(Collectors.toList()) ) ;
+        return categoryList.map(category -> category.stream().map(CategoryResponse::ToCategoryResponseObj).collect(Collectors.toList()) ) ;
     }
 
     @Override
-    public CompletableFuture<CategoryResponse> GetCategoryByID(int categoryID) {
+    public Mono<CategoryResponse> GetCategoryByID(int categoryID) {
         //categoryId validation
-        Category category = categoryRepository.findById(categoryID)
-                .orElseThrow(() -> new BadRequestException("CategoryId not found on the database" + categoryID));
+       Mono<Category> category = categoryRepository.findById(categoryID)
+                .switchIfEmpty(Mono.error(new BadRequestException("CategoryId not found on the database" + categoryID)));
         //Convert the Category object into CategoryResponse obj
-        CategoryResponse categoryResponse = CategoryResponse.ToCategoryResponseObj(category);
-        return CompletableFuture.completedFuture(categoryResponse);
+        return category.map(CategoryResponse::ToCategoryResponseObj);
     }
 
     @Override
-    public CompletableFuture<Boolean> DeleteCategoryByID(int categoryID) {
-        try {
-            categoryRepository.deleteById(categoryID);
-            return CompletableFuture.completedFuture(true);
-        } catch (Exception e) {
-            return CompletableFuture.completedFuture(false);
-        }
+    public Mono<Boolean> DeleteCategoryByID(int categoryID) {
+          return categoryRepository.deleteById(categoryID).thenReturn(true).onErrorReturn(false);
     }
 
     @Transactional
     @Override
-    public CompletableFuture<CategoryResponse> AddCategory(CategoryRequest categoryRequest) {
+    public Mono<CategoryResponse> AddCategory(CategoryRequest categoryRequest) {
         //Convert the categoryRequest into Category Object
         Category category = categoryRequest.ToCategoryObj();
         //Stores it and saved it into the variable
-       Category categorySaved =  this.categoryRepository.save(category);
+        Mono <Category> categorySaved =  this.categoryRepository.save(category);
        //Convert the savedObject into CategoryResponse
-        CategoryResponse categoryResponse =  CategoryResponse.ToCategoryResponseObj(categorySaved);
-        return CompletableFuture.completedFuture(categoryResponse);
+        return categorySaved.map(CategoryResponse::ToCategoryResponseObj);
     }
 
     @Override
-    public CompletableFuture<CategoryResponse> EditCategory(CategoryUpdate categoryUpdate) {
+    public Mono<CategoryResponse> EditCategory(CategoryUpdate categoryUpdate) {
         // find the CategoryObj to Edit on the database base on the categoryId
         int categoryId = categoryUpdate.getCategoryId();
-        Category categoryObj = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new BadRequestException("CategoryId not found on the database" + categoryId));
-
-        //Edit the changes and save them and stores it into the categorySaved variable
-        categoryObj.setCategoryName(categoryObj.getCategoryName());
-        Category categorySaved =categoryRepository.save(categoryObj);
-        //Convert categorySaved into CategoryResponse object
-        CategoryResponse categoryResponse = CategoryResponse.ToCategoryResponseObj(categorySaved);
-        return CompletableFuture.completedFuture(categoryResponse);
+      return categoryRepository.findById(categoryId)
+                .switchIfEmpty(Mono.error(new BadRequestException("CategoryId not found on the database")))
+                .flatMap(category -> {
+                    //Edit the changes and save them and stores it into the categorySaved variable
+                    category.setCategoryName(categoryUpdate.getCategoryName());
+                    //Convert categorySaved into CategoryResponse object
+                    return categoryRepository.save(category).map(CategoryResponse::ToCategoryResponseObj);
+                });
     }
 }

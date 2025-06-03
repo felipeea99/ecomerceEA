@@ -10,6 +10,8 @@ import com.ecommerce.ea.interfaces.ICart;
 import com.ecommerce.ea.repository.AddressRepository;
 import com.ecommerce.ea.repository.CartRepository;
 import com.ecommerce.ea.repository.UserRepository;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,61 +31,52 @@ public class CartService implements ICart {
     }
 
     @Override
-    public CompletableFuture<CartResponse> AddCart(CartRequest cartRequest) {
+    public Mono<CartResponse> AddCart(CartRequest cartRequest) {
         //Convert it to Address Object
         Cart cart = cartRequest.ToCartObj();
        //Save the cartObj and stores it on the variable
-        Cart cartObj = cartRepository.save(cart);
+        Mono<Cart> cartObj = cartRepository.save(cart);
         //Convert it to CartResponse
-        CartResponse cartResponse = CartResponse.ToCartResponseObj(cartObj);
-
-       return CompletableFuture.completedFuture(cartResponse);
+       return cartObj.map(CartResponse::ToCartResponseObj);
     }
 
     @Override
-    public CompletableFuture<CartResponse> EditCart(CartUpdate cartUpdate) {
+    public Mono<CartResponse> EditCart(CartUpdate cartUpdate) {
         //Search the cartId
-       Cart cartObj = cartRepository.findById(cartUpdate.getCartId()).orElseThrow(() -> new BadRequestException("CartId was not found on the database"));
-        //Modify Changes
-       cartObj.setCompleted(cartObj.isCompleted());
-       cartObj.setCustomer(cartObj.getCustomer());
-       cartObj.setProduct(cartObj.getProduct());
-       cartObj.setQuantity(cartObj.getQuantity());
-        //Save changes
-      Cart cartSaved = cartRepository.save(cartObj);
-        //Convert it to CartResponse
-        CartResponse cartResponse = CartResponse.ToCartResponseObj(cartSaved);
-
-        return CompletableFuture.completedFuture(cartResponse);
+       return cartRepository.findById(cartUpdate.getCartId()).switchIfEmpty(Mono.error(new BadRequestException("CartId was not found on the database"))) //search the cartId on the database
+               .flatMap(cart ->{
+                   //Modify Changes
+                   cart.setCompleted(cartUpdate.isCompleted());
+                   cart.setCustomer(cartUpdate.getCustomer());
+                   cart.setProduct(cartUpdate.getProduct());
+                   cart.setQuantity(cartUpdate.getQuantity());
+                   //save the object
+                   return cartRepository.save(cart);
+               })
+               //Convert it to CartResponse
+               .map(CartResponse::ToCartResponseObj);
     }
 
     @Override
-    public CompletableFuture<Boolean> DeleteCart(int cartID) {
-        try{
-            cartRepository.deleteById(cartID);
-            return CompletableFuture.completedFuture(true);
-        }catch (Exception e){
-            return CompletableFuture.completedFuture(false);
-        }
+    public Mono<Boolean> DeleteCart(int cartID) {
+          return cartRepository.deleteById(cartID).thenReturn(true).onErrorReturn(false);
     }
 
     @Override
-    public CompletableFuture<List<CartResponse>> GetAllItemsInCartByUserId(UUID userId) {
+    public Mono<List<CartResponse>> GetAllItemsInCartByUserId(UUID userId) {
         //userId validation
-        userRepository.findById(userId).orElseThrow(() -> new BadRequestException("userId was not found on the database"));
+        userRepository.findById(userId).switchIfEmpty(Mono.error(new BadRequestException("UserId was not found on the database")));
 
         return cartRepository.findAllCartsByUserId(userId)
-                .thenApply(carts ->
-                        carts.stream()
-                                .map(CartResponse::ToCartResponseObj)
-                                .collect(Collectors.toList()));
+                .map(carts ->
+                        carts.stream().map(CartResponse::ToCartResponseObj).collect(Collectors.toList()));
     }
 
     @Override
-    public CompletableFuture<Void> OperationsInCart(int cartID, boolean isIncrement) {
-        return CompletableFuture.supplyAsync(() -> cartRepository.findById(cartID)
-                .orElseThrow(() -> new BadRequestException("CartId was not found on the database"))
-        ).thenCompose(cart -> {
+    public Mono<Void> OperationsInCart(int cartID, boolean isIncrement) {
+        return cartRepository.findById(cartID)
+                .switchIfEmpty(Mono.error(new BadRequestException("cartId was not found on the database"))) //cartId validation
+        .flatMap(cart -> {
             if (!isIncrement) {
                 if (cart.getQuantity() > 1) {
                     cart.setQuantity(cart.getQuantity() - 1);
@@ -95,9 +88,9 @@ public class CartService implements ICart {
                     update.setCustomer(cart.getCustomer());
                     update.setProduct(cart.getProduct());
 
-                    return EditCart(update).thenApply(c -> null);
+                    return EditCart(update).then();
                 } else {
-                    return DeleteCart(cartID).thenApply(b -> null);
+                    return DeleteCart(cartID).then();
                 }
             } else {
                 cart.setQuantity(cart.getQuantity() + 1);
@@ -108,20 +101,19 @@ public class CartService implements ICart {
                 update.setCustomer(cart.getCustomer());
                 update.setProduct(cart.getProduct());
 
-                return EditCart(update).thenApply(c -> null);
+                return EditCart(update).then();
             }
         });
     }
 
     @Override
-    public CompletableFuture<Void> CartProcessCompleted(UUID userId, int addressID) {
+    public Mono<Void> CartProcessCompleted(UUID userId, int addressID) {
         //userId validation
-        userRepository.findById(userId).orElseThrow(() -> new BadRequestException("userId was not found on the database"));
+        userRepository.findById(userId).switchIfEmpty(Mono.error(new BadRequestException("userId was not found on the database")));
         //Get the list of cartsObjects on the database by the userId
-         cartRepository.findAllCartsByUserId(userId);
+        cartRepository.findAllCartsByUserId(userId);
         //Get the Address to stores it on the Shopping History Object
-        Address address = addressRepository.findById(addressID)
-                .orElseThrow(() -> new BadRequestException("AddressID was not found on the database"));
+       Mono<Address> address = addressRepository.findById(addressID).switchIfEmpty(Mono.error(new BadRequestException("userId was not found on the database")));
         //Stored the CartObjects on the Shopping History table
 
         //Delete cartObjects

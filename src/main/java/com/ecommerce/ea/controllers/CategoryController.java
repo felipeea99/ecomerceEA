@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Mono;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -26,7 +27,7 @@ public class CategoryController {
     }
 
     @PostMapping("/addCategory")
-    public CompletableFuture<CategoryResponse> addCategory(@Valid @RequestBody CategoryRequest categoryRequest){
+    public Mono<CategoryResponse> addCategory(@Valid @RequestBody CategoryRequest categoryRequest){
         return this.categoryService.AddCategory(categoryRequest);
     }
 

@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,7 +20,7 @@ public class ProductRequest {
     private boolean isActive;
 
     @NotNull(message = "storeId is mandatory")
-    private int storeId;
+    private UUID storeId;
 
     @NotNull(message = "categoryId is mandatory")
     private int categoryId;

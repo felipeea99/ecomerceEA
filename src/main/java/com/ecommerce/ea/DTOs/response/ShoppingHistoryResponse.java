@@ -24,7 +24,7 @@ public class ShoppingHistoryResponse {
     private Customer customerId;
     private String paymentProviderId;
 
-    private static ShoppingHistoryResponse ToShoppingHistoryResponse(ShoppingHistory shoppingHistory){
+    public static ShoppingHistoryResponse ToShoppingHistoryResponse(ShoppingHistory shoppingHistory){
         return new ShoppingHistoryResponse(
                 shoppingHistory.getHistoryId(),
                 shoppingHistory.getDateTime(),

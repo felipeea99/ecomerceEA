@@ -9,6 +9,7 @@ import com.ecommerce.ea.interfaces.IAddress;
 import com.ecommerce.ea.repository.AddressRepository;
 import com.ecommerce.ea.repository.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,70 +28,62 @@ public class AddressService implements IAddress {
     }
 
     @Override
-    public CompletableFuture<AddressResponse> GetAddressById(int addressId) {
-
-        //Search it and stores it on the variable
-        Address addressObj = addressRepository.findById(addressId)
-                .orElseThrow(() -> new BadRequestException("addressId was not found on the database"));
-        //Convert it to AddressResponse
-        AddressResponse addressResponse = AddressResponse.toAddressResponseObj(addressObj);
-
-        return CompletableFuture.completedFuture(addressResponse);
+    public Mono<AddressResponse> GetAddressById(int addressId) {
+        //Search the addressId and return the object
+       return addressRepository.findById(addressId)
+                .switchIfEmpty(Mono.error(new BadRequestException("addressId was not found on the database")))
+               .map(AddressResponse::toAddressResponseObj);
     }
 
     @Override
-    public CompletableFuture<List<AddressResponse>> GetListAddressesByUserId(UUID userId) {
-        //userId validation
-        userRepository.findById(userId).orElseThrow(() -> new BadRequestException("userId was not found on the database"));
-        //retrieve the list of addresses, then once is ready apply the stream to enable functional methods, to be available to map them, then collect them in a list
-        return addressRepository.findAllAddressesByUserIdAsync(userId)
-                .thenApply(addressList ->
-                        addressList.stream()
-                                .map(AddressResponse::toAddressResponseObj)
-                                .collect(Collectors.toList())
+    public Mono<List<AddressResponse>> GetListAddressesByUserId(UUID userId) {
+        return userRepository.findById(userId)
+                .switchIfEmpty(Mono.error(new BadRequestException("userId was not found on the database")))
+                .flatMap(user ->
+                        addressRepository.findAllAddressesByUserIdAsync(userId) //search all the ones with the given userId
+                                .switchIfEmpty(Mono.error(new BadRequestException("No addresses found for user"))) //throws exception if any
+                                .map(addressList ->
+                                        addressList.stream()
+                                                .map(AddressResponse::toAddressResponseObj)
+                                                .collect(Collectors.toList())
+                                )
                 );
     }
 
     @Transactional
     @Override
-    public CompletableFuture<AddressResponse> AddAddress(AddressRequest addressRequest) {
+    public Mono<AddressResponse> AddAddress(AddressRequest addressRequest) {
         //Convert it to Address Object
         Address addressObj =  addressRequest.ToAddressObj();
         //Save it and stores it on the variable
-        Address addressSaved = addressRepository.save(addressObj);
+        Mono<Address> addressSaved = addressRepository.save(addressObj);
         //Convert it to Response
-        AddressResponse addressResponse = AddressResponse.toAddressResponseObj(addressSaved);
+        return addressSaved.map(AddressResponse::toAddressResponseObj);
 
-        return CompletableFuture.completedFuture(addressResponse);
     }
 
     @Override
-    public CompletableFuture<Boolean> DeleteAddress(int addressId) {
-        try {
-            addressRepository.deleteById(addressId);
-            return CompletableFuture.completedFuture(true);
-        }
-        catch (Exception e) {
-            return CompletableFuture.completedFuture(false);
-        }
+    public Mono<Boolean> DeleteAddress(int addressId) {
+          return addressRepository.deleteById(addressId)
+                  .thenReturn(true)
+                  .onErrorReturn(false);
     }
 
     @Override
-    public CompletableFuture<AddressResponse> EditAddress(AddressUpdate addressUpdate) {
-        //AddressId validation
-       Address addressObj =  addressRepository.findById(addressUpdate.getAddressId())
-               .orElseThrow(() -> new BadRequestException("AddressId was not found on the database"));
-       //Make the changes
-       addressObj.setTown(addressUpdate.getTown());
-       addressObj.setColony(addressUpdate.getColony());
-       addressObj.setStreet(addressUpdate.getStreet());
-       addressObj.setCountry(addressUpdate.getCountry());
-       addressObj.setNumber(addressUpdate.getNumber());
-       //Save changes
-       Address addressSaved = addressRepository.save(addressObj);
-
-       AddressResponse addressResponse = AddressResponse.toAddressResponseObj(addressSaved);
-
-        return CompletableFuture.completedFuture(addressResponse);
+    public Mono<AddressResponse> EditAddress(AddressUpdate addressUpdate) {
+        return addressRepository.findById(addressUpdate.getAddressId()) //Get the addressId
+                .switchIfEmpty(Mono.error(new BadRequestException("AddressId was not found on the database"))) //throw any exception if any
+                .flatMap(address -> {
+                    // Make the changes
+                    address.setTown(addressUpdate.getTown());
+                    address.setColony(addressUpdate.getColony());
+                    address.setStreet(addressUpdate.getStreet());
+                    address.setCountry(addressUpdate.getCountry());
+                    address.setNumber(addressUpdate.getNumber());
+                    // save the object
+                    return addressRepository.save(address);
+                })
+                .map(AddressResponse::toAddressResponseObj); //apply the response method
     }
+
 }

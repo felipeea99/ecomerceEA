@@ -1,5 +1,6 @@
 package com.ecommerce.ea.DTOs.update;
 
+import com.ecommerce.ea.entities.Product;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -32,7 +33,7 @@ public class ShoppingHistoryUpdate {
     private String purchaseUUID;
 
     @NotNull(message = "productId is mandatory")
-    private int productId;
+    private Product productId;
 
     @NotNull(message = "customerId is mandatory")
     private String customerId;

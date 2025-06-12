@@ -3,7 +3,6 @@ package com.ecommerce.ea.interfaces;
 import com.ecommerce.ea.DTOs.request.ProductSizeRequest;
 import com.ecommerce.ea.DTOs.response.ProductSizeResponse;
 import com.ecommerce.ea.DTOs.update.ProductSizeUpdate;
-import com.ecommerce.ea.entities.ProductSize;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

@@ -2,18 +2,16 @@ package com.ecommerce.ea.controllers;
 
 import com.ecommerce.ea.DTOs.request.CategoryRequest;
 import com.ecommerce.ea.DTOs.response.CategoryResponse;
-import com.ecommerce.ea.entities.Category;
-import com.ecommerce.ea.entities.Product;
+import com.ecommerce.ea.DTOs.update.CategoryUpdate;
 import com.ecommerce.ea.services.CategoryService;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.web.csrf.CsrfToken;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-import reactor.core.publisher.Mono;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+
+/// This Controller is for the Admin only
 
 @RestController
 @RequestMapping("/api/category")
@@ -26,14 +24,29 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-    @PostMapping("/addCategory")
-    public Mono<CategoryResponse> addCategory(@Valid @RequestBody CategoryRequest categoryRequest){
-        return this.categoryService.AddCategory(categoryRequest);
+    @PostMapping
+    public CompletableFuture<CategoryResponse> addCategory(@Valid @RequestBody CategoryRequest categoryRequest){
+        return this.categoryService.addCategory(categoryRequest);
     }
 
-    //Generate the CSRF-TOKEN
-    @GetMapping("/csrf-token")
-    public CsrfToken getCsrfToken(HttpServletRequest request){
-        return (CsrfToken) request.getAttribute("_csrf");
+    @GetMapping("/{categoryId}")
+    public CompletableFuture<CategoryResponse> findCategoryByID(int categoryId){
+        return this.categoryService.findCategoryByID(categoryId);
     }
+
+    @GetMapping
+    public CompletableFuture<List<CategoryResponse>> findCategoryByID(){
+        return this.categoryService.findAllCategories();
+    }
+
+    @PutMapping
+    public CompletableFuture<CategoryResponse> editCategory(@Valid @RequestBody CategoryUpdate categoryUpdate){
+        return this.categoryService.editCategory(categoryUpdate);
+    }
+
+    @DeleteMapping("/{categoryId}")
+    public CompletableFuture<Boolean>deleteCategory(@RequestParam int categoryId){
+        return this.categoryService.deleteCategoryByID(categoryId);
+    }
+
 }

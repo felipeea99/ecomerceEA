@@ -10,5 +10,4 @@ import java.util.UUID;
 public interface IUserAcc extends JpaRepository<UserAcc, UUID>{
 
 UserAcc findByUserName(String username);
-
 }

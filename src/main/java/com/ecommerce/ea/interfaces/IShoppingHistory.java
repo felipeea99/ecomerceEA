@@ -8,15 +8,17 @@ import com.ecommerce.ea.entities.ShoppingHistory;
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public interface IShoppingHistory {
-    CompletableFuture<ShoppingHistoryResponse> AddArticleToHistory(ShoppingHistoryRequest shoppingHistoryRequest);
-    CompletableFuture<ShoppingHistoryResponse> EditArticle(ShoppingHistoryUpdate shoppingHistoryUpdate);
-    CompletableFuture<Boolean> DeleteArticle(int historyId);
-    CompletableFuture<List<ShoppingHistoryResponse>> GetAllArticlesBought(UUID userId);
-    CompletableFuture<ShoppingHistoryResponse> GetArticleById(int historyId);
-    CompletableFuture<List<ShoppingHistoryResponse>> GetAllArticlesBoughtAdmin();
-    CompletableFuture<List<ShoppingHistoryResponse>> GetAllArticlesBoughtByStoreId(int storeId);
-    CompletableFuture<ByteArrayOutputStream> ShoppingHistoryExcel();
+    ShoppingHistoryResponse addArticleToHistory(ShoppingHistoryRequest shoppingHistoryRequest);
+    ShoppingHistoryResponse editArticle(ShoppingHistoryUpdate shoppingHistoryUpdate);
+    Boolean deleteArticle(int historyId);
+    List<ShoppingHistoryResponse> getAllArticlesBought(UUID userId);
+    ShoppingHistoryResponse getArticleById(int historyId);
+    List<ShoppingHistoryResponse> getAllArticlesBoughtAdmin();
+    List<ShoppingHistoryResponse> getAllArticlesBoughtByStoreId(UUID storeId);
+    ByteArrayOutputStream shoppingHistoryExcel(UUID storeId);
+
+    ShoppingHistoryResponse ToShoppingHistoryResponse(ShoppingHistory shoppingHistory);
+    ShoppingHistory ToShoppingHistoryObj(ShoppingHistoryRequest shoppingHistoryRequest);
 }

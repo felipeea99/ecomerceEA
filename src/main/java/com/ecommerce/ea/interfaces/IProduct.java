@@ -1,31 +1,26 @@
 package com.ecommerce.ea.interfaces;
 
-import com.ecommerce.ea.DTOs.response.ProductSinglePriceResponse;
-import com.ecommerce.ea.entities.ProductSinglePrice;
-import reactor.core.publisher.Mono;
+import com.ecommerce.ea.DTOs.request.ProductRequest;
+import com.ecommerce.ea.DTOs.response.ProductResponse;
+import com.ecommerce.ea.DTOs.update.ProductUpdate;
+import com.ecommerce.ea.entities.Photo;
+import com.ecommerce.ea.entities.Product;
 
 import java.io.ByteArrayOutputStream;
 import java.util.List;
 import java.util.UUID;
 
-public interface IProductSingle {
-    //Product Single Price Methods
-    Mono<ProductSinglePriceResponse> AddProduct(ProductSinglePriceRequest productSinglePriceRequest);
-    Mono<ProductSinglePriceResponse> EditProduct(ProductSinglePriceUpdate productSinglePriceUpdate);
-
-    //Delete
-    Mono<Boolean> DeleteProduct(int productId);
-
+public interface IProduct {
+    ProductResponse addProduct(ProductRequest productRequest);
+    ProductResponse editProduct(ProductUpdate productUpdate);
+    Boolean deleteProduct(int productId);
     //Other Methods
-    Mono<List<ProductSinglePriceResponse>> GetAllProducts();
-    Mono<ProductSinglePriceResponse> GetProductById(int productId);
-    Mono<List<ProductSinglePriceResponse>> GetProductsByStoreId(UUID storeId);
-    Mono<List<ProductSinglePriceResponse>> GetProductsByCategoryId(int categoryId, UUID storeId);
-    Mono<List<ProductSinglePriceResponse>> GetProductsRandomByCategory(int categoryId, UUID storeId);
-    Mono<ByteArrayOutputStream> ListProductsExcel();
-
-    //Mapping Product Single Price
-    Mono<ProductSinglePrice>ToProductSinglePrice(ProductSinglePriceRequest productSinglePriceRequest);
-    Mono<ProductSinglePriceResponse>ToProductSinglePriceResponse(ProductSinglePrice productSinglePrice);
+    List<ProductResponse> getAllProducts();
+    ProductResponse findProductById(int productId);
+    Product findProductByIdBaseForm(int productId);
+    List<ProductResponse> getProductsByStoreId(UUID storeId);
+    List<ProductResponse> getProductsByCategoryId(int categoryId, UUID storeId);
+    List<ProductResponse> getProductsRandomByCategory(int categoryId, UUID storeId);
+    ByteArrayOutputStream listProductsExcel(UUID storeId);
 
 }

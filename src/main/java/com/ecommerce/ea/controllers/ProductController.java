@@ -1,6 +1,6 @@
 package com.ecommerce.ea.controllers;
 
-import com.ecommerce.ea.services.ProductSingleService;
+import com.ecommerce.ea.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,10 +8,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/product")
 public class ProductController {
 
-    private final ProductSingleService productService;
+    private final ProductService productService;
 
     @Autowired
-    public ProductController(ProductSingleService productService) {
+    public ProductController(ProductService productService) {
         this.productService = productService;
     }
 

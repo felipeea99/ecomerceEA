@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @Entity
@@ -15,10 +17,12 @@ import lombok.Setter;
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String customerId;
+    private UUID customerId;
     @NotNull
     @OneToOne
     @JoinColumn(name = "userId")
     private UserAcc user;
-
+    @OneToOne
+    @JoinColumn(name = "storeId")
+    private Store store;
 }

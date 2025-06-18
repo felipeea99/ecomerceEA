@@ -1,19 +1,21 @@
 package com.ecommerce.ea.repository;
 
-import com.ecommerce.ea.DTOs.response.PhotoResponse;
 import com.ecommerce.ea.entities.Photo;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-import org.springframework.scheduling.annotation.Async;
-import reactor.core.publisher.Mono;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-public interface PhotoRepository extends ReactiveCrudRepository<Photo, Number> {
-    @Async
-    Mono<List<Photo>> findAllPhotosByProductId(int productId);
-    Mono<List<Photo>> findByProductIDOrderByPhotosID(int productID);
-    Mono<List<Photo>> findByIndex(int index);
+@Repository
+public interface PhotoRepository extends JpaRepository<Photo, Number> {
+    @Query("SELECT p FROM Photo p WHERE p.product = :product")
+    List<Photo> findAllPhotosByProductId(@Param("product") int product);
+    @Query("SELECT p FROM Photo p WHERE p.product = :product")
+    List<Photo> findByProductIDOrderByPhotosID(@Param("product") int product);
+    @Query("SELECT p FROM Photo p WHERE p.product = :product AND p.index = 0")
+    List<Photo> findByIndexZero(@Param("product") int product);
 
 }

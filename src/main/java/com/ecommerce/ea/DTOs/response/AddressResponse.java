@@ -1,10 +1,11 @@
 package com.ecommerce.ea.DTOs.response;
 
-import com.ecommerce.ea.entities.Address;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -17,15 +18,6 @@ public class AddressResponse {
     private String number;
     private String colony;
     private String town;
+    private UUID customerId;
 
-    public static AddressResponse toAddressResponseObj(Address address) {
-        return new AddressResponse(
-                address.getAddressId(),
-                address.getCountry(),
-                address.getStreet(),
-                address.getNumber(),
-                address.getColony(),
-                address.getTown()
-        );
-    }
 }

@@ -7,63 +7,63 @@ import com.ecommerce.ea.entities.Size;
 import com.ecommerce.ea.exceptions.BadRequestException;
 import com.ecommerce.ea.interfaces.ISize;
 import com.ecommerce.ea.repository.SizeRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
+@Service
 public class SizeService implements ISize {
 
     private final SizeRepository sizeRepository;
 
-    public SizeService(SizeRepository sizeRepository){
+    public SizeService(SizeRepository sizeRepository) {
         this.sizeRepository = sizeRepository;
     }
 
+    /// Add a Size Object to the database
     @Override
-    public CompletableFuture<SizeResponse> AddSize(SizeRequest sizeRequest) {
+    public SizeResponse AddSize(SizeRequest sizeRequest) {
         //Convert the SizeRequest into SizeObject
         Size size = sizeRequest.ToSizeObject();
-        // Stores it and save it on the database
+        //Save the object on the database and stored it on "sizeSaved" variable
         Size sizeSaved = sizeRepository.save(size);
-        //Convert the sizeSaved into SizeResponse
-        SizeResponse sizeResponse = SizeResponse.ToSizeResponseObj(sizeSaved);
-        return CompletableFuture.completedFuture(sizeResponse);
+        //Convert it into sizeResponse
+        return SizeResponse.ToSizeResponseObj(sizeSaved);
     }
 
+    /// Edit a SizeObject from the database base on a given object
     @Override
-    public CompletableFuture<SizeResponse> EditSize(SizeUpdate sizeUpdate) {
+    public SizeResponse EditSize(SizeUpdate sizeUpdate) {
         //sizeId validation
         int sizeId = sizeUpdate.getSizeId();
+        //return the object with the modifications
         Size size = sizeRepository.findById(sizeId)
                 .orElseThrow(() -> new BadRequestException("sizeId was not found on the database"));
-        //Edit and save the change on the variable sizeSaved
+        //Make changes
         size.setSize(sizeUpdate.getSize());
+        //Save the Changes
         Size sizeSaved = sizeRepository.save(size);
-        //Convert sizeSaved to SizeResponse type
-        SizeResponse sizeResponse = SizeResponse.ToSizeResponseObj(sizeSaved);
-        return CompletableFuture.completedFuture(sizeResponse);
+        //Transform the "sizeSaved" variable into SizeResponse type
+       return SizeResponse.ToSizeResponseObj(sizeSaved);
     }
 
+    /// Delete a SizeObject from the database base on a given sizeId
     @Override
-    public CompletableFuture<Boolean> DeleteSize(int sizeId) {
-        try{
-            //sizeId validation
-            Size size = sizeRepository.findById(sizeId)
-                    .orElseThrow(() -> new BadRequestException("sizeId was not found on the database"));
-            sizeRepository.deleteById(sizeId);
-            return CompletableFuture.completedFuture(true);
-        } catch (Exception e) {
-            return CompletableFuture.completedFuture(false);
-        }
+    public Boolean DeleteSize(int sizeId) {
+        //sizeId validation
+        sizeRepository.findById(sizeId).orElseThrow(() -> new BadRequestException("sizeId was not found on the database"));
+        //Delete size object
+        sizeRepository.deleteById(sizeId);
+        return true
     }
 
+    /// Delete a SizeObject from the database base on a given sizeId
     @Override
-    public CompletableFuture<List<SizeResponse>> GetAllSizes() {
+    public List<SizeResponse> GetAllSizes() {
         //retrieve all the size objects from the database
-        List<Size> sizeList = sizeRepository.findAll();
-        //convert the sizeList to SizeResponse Type
-        List<SizeResponse> sizeResponseList = sizeList.stream().map(SizeResponse::ToSizeResponseObj).collect(Collectors.toList());
-        return CompletableFuture.completedFuture(sizeResponseList);
+        List<Size> sizeList =  sizeRepository.findAll();
+        //Transform it into SizeResponseType
+        return sizeList.stream().map(SizeResponse::ToSizeResponseObj).toList();
     }
 }

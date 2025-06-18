@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -22,7 +23,7 @@ public class PaymentStoreUpdate {
     private Date date;
 
     @NotNull(message = "storeId is mandatory")
-    private int storeId;
+    private UUID storeId;
 
     @Min(value = 0, message = "amount must be positive or zero")
     private double amount;

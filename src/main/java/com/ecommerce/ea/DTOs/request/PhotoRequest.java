@@ -18,14 +18,6 @@ public class PhotoRequest {
     private String photoValue;
     private int index;
     @NotNull(message = "productId is mandatory")
-    private Product productId;
-
-    public Photo ToPhotoObj(){
-       Photo photo = new Photo();
-       photo.setPhotoValue(photoValue);
-       photo.setIndex(index);
-       photo.setProduct(productId);
-
-       return photo;
-    }
+    private int productId;
+    
 }

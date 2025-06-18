@@ -3,123 +3,179 @@ package com.ecommerce.ea.services;
 import com.ecommerce.ea.DTOs.request.CartRequest;
 import com.ecommerce.ea.DTOs.response.CartResponse;
 import com.ecommerce.ea.DTOs.update.CartUpdate;
-import com.ecommerce.ea.entities.Address;
-import com.ecommerce.ea.entities.Cart;
+import com.ecommerce.ea.entities.*;
 import com.ecommerce.ea.exceptions.BadRequestException;
 import com.ecommerce.ea.interfaces.ICart;
-import com.ecommerce.ea.repository.AddressRepository;
-import com.ecommerce.ea.repository.CartRepository;
-import com.ecommerce.ea.repository.UserRepository;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+import com.ecommerce.ea.repository.*;
+import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
+@Service
 public class CartService implements ICart {
 
-    private  final CartRepository cartRepository;
-    private final UserRepository userRepository;
+    private final CartRepository cartRepository;
     private final AddressRepository addressRepository;
+    private final ShoppingHistoryRepository shoppingHistoryRepository;
+    private final ProductService productService;
+    private final CustomerService customerService;
 
-    public CartService(CartRepository cartRepository, UserRepository userRepository, AddressRepository addressRepository){
+    public CartService(CartRepository cartRepository, AddressRepository addressRepository, ShoppingHistoryRepository shoppingHistoryRepository, ProductService productService, CustomerService customerService){
         this.cartRepository  = cartRepository;
-        this.userRepository = userRepository;
         this.addressRepository = addressRepository;
+        this.shoppingHistoryRepository = shoppingHistoryRepository;
+        this.productService = productService;
+        this.customerService = customerService;
     }
 
     @Override
-    public Mono<CartResponse> AddCart(CartRequest cartRequest) {
+    public Cart findCartById(int cartId) {
+        return cartRepository.findById(cartId)
+                .orElseThrow(() -> new BadRequestException("cartId was not found on the database"));
+    }
+
+    @Override
+    public CartResponse addCart(CartRequest cartRequest) {
         //Convert it to Address Object
-        Cart cart = cartRequest.ToCartObj();
-       //Save the cartObj and stores it on the variable
-        Mono<Cart> cartObj = cartRepository.save(cart);
+        Cart cart = this.ToCartObj(cartRequest);
+        //Save the cartObj and stores it on the variable
+        Cart cartObj = cartRepository.save(cart);
         //Convert it to CartResponse
-       return cartObj.map(CartResponse::ToCartResponseObj);
+        return this.ToCartResponse(cartObj);
+
     }
 
     @Override
-    public Mono<CartResponse> EditCart(CartUpdate cartUpdate) {
+    public CartResponse editCart(CartUpdate cartUpdate) {
         //Search the cartId
-       return cartRepository.findById(cartUpdate.getCartId()).switchIfEmpty(Mono.error(new BadRequestException("CartId was not found on the database"))) //search the cartId on the database
-               .flatMap(cart ->{
-                   //Modify Changes
-                   cart.setCompleted(cartUpdate.isCompleted());
-                   cart.setCustomer(cartUpdate.getCustomer());
-                   cart.setProduct(cartUpdate.getProduct());
-                   cart.setQuantity(cartUpdate.getQuantity());
-                   //save the object
-                   return cartRepository.save(cart);
-               })
-               //Convert it to CartResponse
-               .map(CartResponse::ToCartResponseObj);
+       Cart cart = this.findCartById(cartUpdate.getCartId());
+        // Product Inicialization
+        Product product = productService.findProductByIdBaseForm(cartUpdate.getProductId());
+        // Customer Inicialization
+        Customer customer = customerService.findCustomerById(cartUpdate.getCustomerId());
+
+       //Modify Changes
+        cart.setCompleted(cartUpdate.isCompleted());
+        cart.setCustomer(customer);
+        cart.setProduct(product);
+        cart.setQuantity(cartUpdate.getQuantity());
+        //save the object in the database and stored on the "cartSaved" object
+        Cart cartSaved = cartRepository.save(cart);
+        //Convert it from "Cart" type to "CartResponse"
+        return this.ToCartResponse(cartSaved);
     }
 
     @Override
-    public Mono<Boolean> DeleteCart(int cartID) {
-          return cartRepository.deleteById(cartID).thenReturn(true).onErrorReturn(false);
+    public Boolean deleteCart(int cartID) {
+        //CartId Validation
+        this.findCartById(cartID);
+        //Delete Cart Obj from the database
+        cartRepository.deleteById(cartID);
+        return true;
     }
 
     @Override
-    public Mono<List<CartResponse>> GetAllItemsInCartByUserId(UUID userId) {
-        //userId validation
-        userRepository.findById(userId).switchIfEmpty(Mono.error(new BadRequestException("UserId was not found on the database")));
-
-        return cartRepository.findAllCartsByUserId(userId)
-                .map(carts ->
-                        carts.stream().map(CartResponse::ToCartResponseObj).collect(Collectors.toList()));
+    public List<CartResponse> findAllItemsInCartByCustomerId(UUID customerId) {
+        //find all the carts object on the database base on the customerId
+        List<Cart> cartList = cartRepository.findAllCartsByCustomerId(customerId);
+        //Convert the cartList from "Cart" type into "CartResponse"
+       return cartList.stream().map(this::ToCartResponse).toList();
     }
 
     @Override
-    public Mono<Void> OperationsInCart(int cartID, boolean isIncrement) {
-        return cartRepository.findById(cartID)
-                .switchIfEmpty(Mono.error(new BadRequestException("cartId was not found on the database"))) //cartId validation
-        .flatMap(cart -> {
-            if (!isIncrement) {
-                if (cart.getQuantity() > 1) {
-                    cart.setQuantity(cart.getQuantity() - 1);
+    public Void operationsInCart(int cartID, boolean isIncrement) {
+        //CartId validation
+        Cart cart = this.findCartById(cartID);
 
-                    CartUpdate update = new CartUpdate();
-                    update.setCartId(cart.getCartId());
-                    update.setQuantity(cart.getQuantity());
-                    update.setCompleted(cart.isCompleted());
-                    update.setCustomer(cart.getCustomer());
-                    update.setProduct(cart.getProduct());
-
-                    return EditCart(update).then();
-                } else {
-                    return DeleteCart(cartID).then();
-                }
-            } else {
-                cart.setQuantity(cart.getQuantity() + 1);
+        // is it increment or decrement
+        if (!isIncrement) {
+            if (cart.getQuantity() > 1) {
+                //decrement quantity
                 CartUpdate update = new CartUpdate();
                 update.setCartId(cart.getCartId());
                 update.setQuantity(cart.getQuantity());
                 update.setCompleted(cart.isCompleted());
-                update.setCustomer(cart.getCustomer());
-                update.setProduct(cart.getProduct());
-
-                return EditCart(update).then();
+                update.setCustomerId(cart.getCustomer().getCustomerId());
+                update.setProductId(cart.getProduct().getProductId());
+                // Call the editCart method
+                editCart(update);
+            } else {
+                // if quantity is 0 or less will be deleted
+                 deleteCart(cartID);
             }
-        });
-    }
+        } else {
+            // Increment the quantity by 1
+            cart.setQuantity(cart.getQuantity() + 1);
 
-    @Override
-    public Mono<Void> CartProcessCompleted(UUID userId, int addressID) {
-        //userId validation
-        userRepository.findById(userId).switchIfEmpty(Mono.error(new BadRequestException("userId was not found on the database")));
-        //Get the list of cartsObjects on the database by the userId
-        cartRepository.findAllCartsByUserId(userId);
-        //Get the Address to stores it on the Shopping History Object
-       Mono<Address> address = addressRepository.findById(addressID).switchIfEmpty(Mono.error(new BadRequestException("userId was not found on the database")));
-        //Stored the CartObjects on the Shopping History table
-
-        //Delete cartObjects
-
-
+            CartUpdate update = new CartUpdate();
+            update.setCartId(cart.getCartId());
+            update.setQuantity(cart.getQuantity());
+            update.setCompleted(cart.isCompleted());
+            update.setCustomerId(cart.getCustomer().getCustomerId());
+            update.setProductId(cart.getProduct().getProductId());
+            // Call the editCart method
+            editCart(update);
+        }
         return null;
     }
 
+    @Override
+    public Void cartProcessCompleted(UUID customerId, int addressID, String purchaseUUID) {
+        //Get the list of cartsObjects on the database by the customerId
+         List<Cart> cartList = cartRepository.findAllCartsByCustomerId(customerId);
+        //Get the Address to stores it on the Shopping History Object
+        Address address = addressRepository.findById(addressID)
+               .orElseThrow(() -> new BadRequestException("addressId was not found on the database"));
+        //create the shoppingHistory objects to save it in Shopping History table
+        for (Cart cart : cartList) {
+            ShoppingHistory shObj = new ShoppingHistory();
+            shObj.setDateTime(new Date());
+            shObj.setCustomer(cart.getCustomer());
+            shObj.setStatus(StatusType.PREPARING);
+            shObj.setPurchaseUUID(purchaseUUID);
+            shObj.setProduct(cart.getProduct());
+            shObj.setQuantity(cart.getQuantity());
+            shObj.setAddress(address);
+            // Save ShoppingHistory
+            shoppingHistoryRepository.save(shObj);
+            // Delete cart
+            cartRepository.deleteById(cart.getCartId());
+        }
+        return null;
+    }
+
+
+    @Override
+    public Cart ToCartObj(CartRequest cartRequest) {
+        /// Product Inicialization
+        Product product = new Product();
+        product = productService.findProductByIdBaseForm(cartRequest.getProductId());
+
+        /// Customer Inicialization
+        Customer customer = new Customer();
+        customer = customerService.findCustomerById(cartRequest.getCustomerId());
+
+        /// Cart Build
+        Cart cart = new Cart();
+        cart.setQuantity(cartRequest.getQuantity());
+        cart.setCompleted(cartRequest.isCompleted());
+        cart.setProduct(product);
+        cart.setCustomer(customer);
+        return cart;
+    }
+
+    @Override
+    public CartResponse ToCartResponse(Cart cart) {
+        CartResponse cartResponse = new CartResponse();
+
+        cartResponse.setCartId(cart.getCartId());
+        cartResponse.setCompleted(cart.isCompleted());
+        cartResponse.setQuantity(cart.getQuantity());
+        cartResponse.setProductId(cart.getProduct().getProductId());
+        cartResponse.setCartId(cart.getCartId());
+
+        return cartResponse;
+    }
 }

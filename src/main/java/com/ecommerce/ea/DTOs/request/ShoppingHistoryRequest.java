@@ -1,6 +1,8 @@
 package com.ecommerce.ea.DTOs.request;
 
+import com.ecommerce.ea.entities.Address;
 import com.ecommerce.ea.entities.ShoppingHistory;
+import com.ecommerce.ea.entities.StatusType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -25,7 +28,7 @@ public class ShoppingHistoryRequest {
     private int quantity;
 
     @NotBlank(message = "status is mandatory")
-    private String status;
+    private StatusType status;
 
     @NotBlank(message = "purchaseUUID is mandatory")
     private String purchaseUUID;
@@ -34,21 +37,13 @@ public class ShoppingHistoryRequest {
     private int productId;
 
     @NotNull(message = "customerId is mandatory")
-    private String customerId;  // En Customer, customerId es String (UUID)
+    private UUID customerId;
 
-    @NotBlank(message = "paymentProviderId is mandatory")
-    private String paymentProviderId;
+    @NotNull(message = "addressId is mandatory")
+    private int addressId;
 
-    public ShoppingHistory ToShoppingHistoryObj(){
-        ShoppingHistory shoppingHistory = new ShoppingHistory();
-        shoppingHistory.setDateTime(dateTime);
-        shoppingHistory.setCustomer(shoppingHistory.getCustomer());
-        shoppingHistory.setProduct(shoppingHistory.getProduct());
-        shoppingHistory.setStatus(status);
-        shoppingHistory.setQuantity(quantity);
-        shoppingHistory.setPurchaseUUID(purchaseUUID);
-        shoppingHistory.setPaymentProviderId(paymentProviderId);
+    @NotNull(message = "storeId is mandatory")
+    private UUID storeId;
 
-        return shoppingHistory;
-    }
+
 }

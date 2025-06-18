@@ -6,6 +6,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 public class StoreRequest {
@@ -16,6 +18,10 @@ public class StoreRequest {
     @Email(message = "invalid email format")
     private String storeEmail;
 
+    @NotNull(message = "domain is mandatory")
+    private String domain;
+
     @NotNull(message = "user is mandatory")
-    private String userId;
+    private UUID userId;
+
 }

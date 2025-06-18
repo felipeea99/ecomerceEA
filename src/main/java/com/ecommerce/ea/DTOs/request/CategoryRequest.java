@@ -15,8 +15,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryRequest {
-    @Min(1)
-    private int categoryId;
     @NotBlank(message = "category name should not be empty")
     private String categoryName;
 

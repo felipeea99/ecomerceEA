@@ -1,4 +1,7 @@
 package com.ecommerce.ea.entities;
 
-public class StatusType {
+public enum StatusType {
+    PREPARING,
+    SENT,
+    DELIVERED
 }

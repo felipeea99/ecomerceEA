@@ -9,11 +9,9 @@ import com.ecommerce.ea.interfaces.ICategory;
 import com.ecommerce.ea.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @Service
 public class CategoryService implements ICategory {
@@ -23,51 +21,63 @@ public class CategoryService implements ICategory {
     public CategoryService(CategoryRepository categoryRepository){
         this.categoryRepository = categoryRepository;
     }
-
+    ///Get all the categories from the database ADMIN
     @Override
-    public Mono<List<CategoryResponse>> GetAllCategories() {
+    public List<CategoryResponse> findAllCategories() {
         //Retrieve all the categories objects from the database
-        Mono<List<Category>> categoryList = categoryRepository.findAllAsync();
-        //Convert each element into CompletableFuture<List<CategoryResponse>>
-        return categoryList.map(category -> category.stream().map(CategoryResponse::ToCategoryResponseObj).collect(Collectors.toList()) ) ;
+        List<Category> categoryList = categoryRepository.findAll();
+        //Return it and transform it into CategoryResponse type
+        return categoryList.stream().map(CategoryResponse::ToCategoryResponseObj).toList();
     }
-
+    ///Get a category from the database by a categoryId
     @Override
-    public Mono<CategoryResponse> GetCategoryByID(int categoryID) {
-        //categoryId validation
-       Mono<Category> category = categoryRepository.findById(categoryID)
-                .switchIfEmpty(Mono.error(new BadRequestException("CategoryId not found on the database" + categoryID)));
+    public CategoryResponse findCategoryByID(int categoryId) {
+        //CategoryId validation
+       Category category = findCategoryByIdBaseForm(categoryId);
         //Convert the Category object into CategoryResponse obj
-        return category.map(CategoryResponse::ToCategoryResponseObj);
+       return CategoryResponse.ToCategoryResponseObj(category);
+
     }
 
+    ///Delete a category from the database by a categoryId
     @Override
-    public Mono<Boolean> DeleteCategoryByID(int categoryID) {
-          return categoryRepository.deleteById(categoryID).thenReturn(true).onErrorReturn(false);
+    public Boolean deleteCategory(int categoryId) {
+        Category category = findCategoryByIdBaseForm(categoryId);
+        categoryRepository.deleteById(categoryId);
+        return true;
     }
 
+    ///Adds a category from the database
     @Transactional
     @Override
-    public Mono<CategoryResponse> AddCategory(CategoryRequest categoryRequest) {
+    public CategoryResponse addCategory(CategoryRequest categoryRequest) {
         //Convert the categoryRequest into Category Object
         Category category = categoryRequest.ToCategoryObj();
-        //Stores it and saved it into the variable
-        Mono <Category> categorySaved =  this.categoryRepository.save(category);
+        //Stores it and saved it into the "categorySaved" variable
+        Category categorySaved =  this.categoryRepository.save(category);
        //Convert the savedObject into CategoryResponse
-        return categorySaved.map(CategoryResponse::ToCategoryResponseObj);
+        return CategoryResponse.ToCategoryResponseObj(categorySaved);
     }
 
+    ///Edits  a category from the database base on a categoryId
     @Override
-    public Mono<CategoryResponse> EditCategory(CategoryUpdate categoryUpdate) {
+    public CategoryResponse editCategory(CategoryUpdate categoryUpdate) {
         // find the CategoryObj to Edit on the database base on the categoryId
         int categoryId = categoryUpdate.getCategoryId();
-      return categoryRepository.findById(categoryId)
-                .switchIfEmpty(Mono.error(new BadRequestException("CategoryId not found on the database")))
-                .flatMap(category -> {
-                    //Edit the changes and save them and stores it into the categorySaved variable
-                    category.setCategoryName(categoryUpdate.getCategoryName());
-                    //Convert categorySaved into CategoryResponse object
-                    return categoryRepository.save(category).map(CategoryResponse::ToCategoryResponseObj);
-                });
+         Category category = findCategoryByIdBaseForm(categoryId);
+         //Edit the changes and save them and stores it into the categorySaved variable
+        category.setCategoryName(categoryUpdate.getCategoryName());
+        Category categorySaved= categoryRepository.save(category);
+        //Convert categorySaved into CategoryResponse object
+        return CategoryResponse.ToCategoryResponseObj(categorySaved);
+
     }
+    ///Retrieve a categoryObject from the database base on the categoryId provided
+    @Override
+    public Category findCategoryByIdBaseForm(int categoryID) {
+        return categoryRepository.findById(categoryID)
+                .orElseThrow(() -> new BadRequestException("CategoryId not found on the database"));
+    }
+
+
 }

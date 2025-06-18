@@ -15,15 +15,5 @@ public class PhotoResponse {
     private int photoID;
     private String photoValue;
     private int index;
-    private Product productId;
-
-    public static PhotoResponse ToPhotoResponseObj(Photo photo){
-        return new PhotoResponse(
-                photo.getPhotoID(),
-                photo.getPhotoValue(),
-                photo.getIndex(),
-                photo.getProduct()
-        );
-    }
-
+    private int productId;
 }

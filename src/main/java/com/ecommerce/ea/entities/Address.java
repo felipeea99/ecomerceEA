@@ -1,16 +1,13 @@
 package com.ecommerce.ea.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.validation.constraints.Min;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.userdetails.User;
 
 @Getter
 @Setter
@@ -32,5 +29,9 @@ public class Address {
     private String colony;
     @NotBlank(message = "town is mandatory")
     private String town;
+    @ManyToOne
+    @JoinColumn(name = "customerId")
+    private Customer customer;
+
 }
 

@@ -20,13 +20,14 @@ public class ShoppingHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int historyId;
-    @NotBlank
+    @NotNull
     private Date dateTime;
     @Min(0)
     private int quantity;
-    @NotBlank
-    private String status;
-    @NotBlank
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private StatusType status;
+    @NotNull
     private String purchaseUUID;
     @NotNull
     @ManyToOne
@@ -36,6 +37,10 @@ public class ShoppingHistory {
     @ManyToOne
     @JoinColumn(name = "customerId")
     private Customer customer;
-    @NotBlank
-    private String paymentProviderId;
+    @ManyToOne
+    @JoinColumn(name = "addressId")
+    private Address address;
+    @ManyToOne
+    @JoinColumn(name = "storeId")
+    private Store store;
 }

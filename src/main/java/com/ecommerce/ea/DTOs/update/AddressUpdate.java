@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -27,4 +29,6 @@ public class AddressUpdate {
     private String colony;
     @NotBlank(message = "town is mandatory")
     private String town;
+    @NotBlank(message = "town is mandatory")
+    private UUID customerId;
 }

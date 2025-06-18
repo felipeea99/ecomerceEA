@@ -33,7 +33,7 @@ public class SecurityConfig {
       return  http
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(auth -> auth
-                      .requestMatchers("/api/acc/**").permitAll()  //  permission without verification
+                        .requestMatchers("/api/acc/**").permitAll()  //  permission without verification
                       .anyRequest().authenticated()  // requires verification
               )
                 .httpBasic(Customizer.withDefaults())

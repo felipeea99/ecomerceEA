@@ -1,13 +1,13 @@
 package com.ecommerce.ea.DTOs.update;
 
-import com.ecommerce.ea.entities.Customer;
-import com.ecommerce.ea.entities.Product;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -20,7 +20,7 @@ public class CartUpdate {
     private int quantity;
     private boolean isCompleted;
     @NotNull
-    private Product product;
+    private int productId;
     @NotNull
-    private Customer customer;
+    private UUID customerId;
 }

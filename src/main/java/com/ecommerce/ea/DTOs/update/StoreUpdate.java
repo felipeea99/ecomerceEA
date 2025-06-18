@@ -6,10 +6,12 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 public class StoreUpdate {
-    private String storeID;
+    private UUID storeID;
 
     @NotBlank(message = "store name is mandatory")
     private String storeName;
@@ -18,6 +20,9 @@ public class StoreUpdate {
     @Email(message = "invalid email format")
     private String storeEmail;
 
-    @NotNull(message = "user is mandatory")
-    private String userId;
+    @NotBlank(message = "domain email is mandatory")
+    private String domain;
+    @NotBlank(message = "userId email is mandatory")
+    private UUID userId;
+
 }

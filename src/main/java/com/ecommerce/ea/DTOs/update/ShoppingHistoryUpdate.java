@@ -1,6 +1,9 @@
 package com.ecommerce.ea.DTOs.update;
 
+import com.ecommerce.ea.entities.Address;
+import com.ecommerce.ea.entities.Customer;
 import com.ecommerce.ea.entities.Product;
+import com.ecommerce.ea.entities.StatusType;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,6 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -27,17 +31,20 @@ public class ShoppingHistoryUpdate {
     private int quantity;
 
     @NotBlank(message = "status is mandatory")
-    private String status;
+    private StatusType status;
 
     @NotBlank(message = "purchaseUUID is mandatory")
     private String purchaseUUID;
 
     @NotNull(message = "productId is mandatory")
-    private Product productId;
+    private int productId;
 
     @NotNull(message = "customerId is mandatory")
-    private String customerId;
+    private UUID customerId;
 
-    @NotBlank(message = "paymentProviderId is mandatory")
-    private String paymentProviderId;
+    @NotNull(message = "addressId is mandatory")
+    private int addressId;
+
+    @NotNull(message = "customerId is mandatory")
+    private UUID storeId;
 }

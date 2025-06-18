@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -14,7 +15,7 @@ import java.util.Date;
 public class PaymentStoreResponse {
     private int storePaidId;
     private Date date;
-    private int storeId;
+    private UUID storeId;
     private double amount;
-    private int referencePayment;
+    private String referencePayment;
 }

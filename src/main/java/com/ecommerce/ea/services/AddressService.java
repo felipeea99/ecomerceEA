@@ -4,86 +4,118 @@ import com.ecommerce.ea.DTOs.request.AddressRequest;
 import com.ecommerce.ea.DTOs.response.AddressResponse;
 import com.ecommerce.ea.DTOs.update.AddressUpdate;
 import com.ecommerce.ea.entities.Address;
+import com.ecommerce.ea.entities.Customer;
 import com.ecommerce.ea.exceptions.BadRequestException;
 import com.ecommerce.ea.interfaces.IAddress;
 import com.ecommerce.ea.repository.AddressRepository;
 import com.ecommerce.ea.repository.UserRepository;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
+@Service
 public class AddressService implements IAddress {
 
     private final AddressRepository addressRepository;
-    private final UserRepository userRepository;
+    private final CustomerService customerService;
 
-    public AddressService(AddressRepository addressRepository, UserRepository userRepository){
+    public AddressService(AddressRepository addressRepository, CustomerService customerService){
         this.addressRepository = addressRepository;
-        this.userRepository = userRepository;
+        this.customerService = customerService;
     }
 
     @Override
-    public Mono<AddressResponse> GetAddressById(int addressId) {
-        //Search the addressId and return the object
-       return addressRepository.findById(addressId)
-                .switchIfEmpty(Mono.error(new BadRequestException("addressId was not found on the database")))
-               .map(AddressResponse::toAddressResponseObj);
+    public Address findAddressByIdBaseForm(int addressId) {
+        return addressRepository.findById(addressId)
+                .orElseThrow(() -> new BadRequestException("addressId was not found on the database"));
     }
 
+    /// Retrieve an Address Object from the database using a addressId
     @Override
-    public Mono<List<AddressResponse>> GetListAddressesByUserId(UUID userId) {
-        return userRepository.findById(userId)
-                .switchIfEmpty(Mono.error(new BadRequestException("userId was not found on the database")))
-                .flatMap(user ->
-                        addressRepository.findAllAddressesByUserIdAsync(userId) //search all the ones with the given userId
-                                .switchIfEmpty(Mono.error(new BadRequestException("No addresses found for user"))) //throws exception if any
-                                .map(addressList ->
-                                        addressList.stream()
-                                                .map(AddressResponse::toAddressResponseObj)
-                                                .collect(Collectors.toList())
-                                )
-                );
+    @Async
+    public AddressResponse findAddressById(int addressId, UUID customerId) {
+        Address addressObj = this.findAddressByIdBaseForm(addressId);
+        //Transform the object from Address to AddressResponse and return it
+        return this.ToAddressResponse(addressObj);
+
     }
 
+    /// Retrieve a List of Addresses from the database using a userId
+    @Override
+    public List<AddressResponse> findAddressesByUserId(UUID customerId) {
+        //Search the customerId and store the objects on the List
+        List<Address> addressList = addressRepository.findAllAddressesByCustomerId(customerId);
+        //Convert the "addressList" of Address type to AddressResponse and return it
+        return addressList.stream().map(this::ToAddressResponse).toList();
+    }
+
+    /// Add an Address Object to the database
     @Transactional
     @Override
-    public Mono<AddressResponse> AddAddress(AddressRequest addressRequest) {
-        //Convert it to Address Object
-        Address addressObj =  addressRequest.ToAddressObj();
-        //Save it and stores it on the variable
-        Mono<Address> addressSaved = addressRepository.save(addressObj);
-        //Convert it to Response
-        return addressSaved.map(AddressResponse::toAddressResponseObj);
+    public AddressResponse addAddress(AddressRequest addressRequest) {
+        // Convert to Address entity
+        Address addressObj = this.ToAddressObj(addressRequest);
+        Address addressSaved = addressRepository.save(addressObj);
+        //return the AddressResponse Object
+        return this.ToAddressResponse(addressSaved);
+    }
 
+
+    /// Delete an Address Object from the database base on and addressId
+    @Override
+    public Boolean deleteAddress(int addressId) {
+        //Verify if the addressId exists
+        this.findAddressByIdBaseForm(addressId);
+        //Deletes the addressObj from the database
+            addressRepository.deleteById(addressId);
+        //Returns the value
+            return true;
+    }
+
+    /// Edits an Address Object of the database base on and AddressUpdate.addressId
+    @Override
+    public AddressResponse editAddress(AddressUpdate addressUpdate) {
+        //AddressId validation
+        Address address =  this.findAddressByIdBaseForm(addressUpdate.getAddressId());
+        // Make the changes
+        address.setTown(addressUpdate.getTown());
+        address.setColony(addressUpdate.getColony());
+        address.setStreet(addressUpdate.getStreet());
+        address.setCountry(addressUpdate.getCountry());
+        address.setNumber(addressUpdate.getNumber());
+        // save the object on the database and store it in the "addressSaved" variable
+        Address addressSaved = addressRepository.save(address);
+        return  this.ToAddressResponse(addressSaved);
+    }
+    /// Address Transformations
+    @Override
+    public AddressResponse ToAddressResponse(Address address) {
+        AddressResponse addressResponse = new AddressResponse();
+        addressResponse.setAddressId(address.getAddressId());
+        addressResponse.setTown(address.getTown());
+        addressResponse.setNumber(address.getNumber());
+        addressResponse.setCountry(address.getCountry());
+        addressResponse.setStreet(address.getStreet());
+        addressResponse.setColony(address.getColony());
+        return addressResponse;
     }
 
     @Override
-    public Mono<Boolean> DeleteAddress(int addressId) {
-          return addressRepository.deleteById(addressId)
-                  .thenReturn(true)
-                  .onErrorReturn(false);
-    }
-
-    @Override
-    public Mono<AddressResponse> EditAddress(AddressUpdate addressUpdate) {
-        return addressRepository.findById(addressUpdate.getAddressId()) //Get the addressId
-                .switchIfEmpty(Mono.error(new BadRequestException("AddressId was not found on the database"))) //throw any exception if any
-                .flatMap(address -> {
-                    // Make the changes
-                    address.setTown(addressUpdate.getTown());
-                    address.setColony(addressUpdate.getColony());
-                    address.setStreet(addressUpdate.getStreet());
-                    address.setCountry(addressUpdate.getCountry());
-                    address.setNumber(addressUpdate.getNumber());
-                    // save the object
-                    return addressRepository.save(address);
-                })
-                .map(AddressResponse::toAddressResponseObj); //apply the response method
+    public Address ToAddressObj(AddressRequest addressRequest) {
+        //User validation
+      Customer customer = customerService.findCustomerById(addressRequest.getCustomerId());
+        //Transformation
+        Address address = new Address();
+        address.setCountry(addressRequest.getCountry());
+        address.setStreet(addressRequest.getStreet());
+        address.setNumber(addressRequest.getNumber());
+        address.setColony(addressRequest.getColony());
+        address.setTown(addressRequest.getTown());
+        address.setCustomer(customer);
+        return address;
     }
 
 }

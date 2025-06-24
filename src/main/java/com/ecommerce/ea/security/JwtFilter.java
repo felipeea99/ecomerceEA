@@ -1,8 +1,8 @@
 
 package com.ecommerce.ea.security;
 
-import com.ecommerce.ea.services.JWTService;
-import com.ecommerce.ea.services.UserDetailsService;
+import com.ecommerce.ea.services.store.JWTService;
+import com.ecommerce.ea.services.auth.UserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

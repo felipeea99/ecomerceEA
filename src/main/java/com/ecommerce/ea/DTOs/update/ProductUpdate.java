@@ -1,8 +1,6 @@
 package com.ecommerce.ea.DTOs.update;
 
-import com.ecommerce.ea.entities.Category;
-import com.ecommerce.ea.entities.PriceBySize;
-import com.ecommerce.ea.entities.Store;
+import com.ecommerce.ea.entities.store.PriceBySize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -10,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -35,7 +34,7 @@ public class ProductUpdate {
 
     private boolean hasSizes;
 
-    private double price;
+    private BigDecimal price;
 
     private List<PriceBySize> pricesBySize = new ArrayList<>();
 }

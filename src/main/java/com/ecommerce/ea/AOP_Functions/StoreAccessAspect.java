@@ -1,16 +1,17 @@
 package com.ecommerce.ea.AOP_Functions;
 
 import com.ecommerce.ea.AOP_Functions.context.StoreContextHolder;
-import com.ecommerce.ea.entities.Customer;
-import com.ecommerce.ea.entities.Store;
-import com.ecommerce.ea.services.CustomerService;
-import com.ecommerce.ea.services.StoreService;
-import com.ecommerce.ea.services.UserAccService;
+import com.ecommerce.ea.entities.auth.Customer;
+import com.ecommerce.ea.entities.auth.Store;
+import com.ecommerce.ea.services.auth.CustomerService;
+import com.ecommerce.ea.services.auth.StoreService;
+import com.ecommerce.ea.services.auth.UserAccService;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,12 +22,16 @@ import java.util.UUID;
 @Component
 public class StoreAccessAspect {
 
-    @Autowired
-    private StoreService storeService;
-    @Autowired
-    private CustomerService customerService;
-    @Autowired
-    private UserAccService userAccService;
+    private final StoreService storeService;
+    private final CustomerService customerService;
+    private final UserAccService userAccService;
+
+    public StoreAccessAspect(@Lazy StoreService storeService, @Lazy CustomerService customerService, @Lazy UserAccService userAccService) {
+        this.storeService = storeService;
+        this.customerService = customerService;
+        this.userAccService = userAccService;
+    }
+
 
     @Before("@annotation(com.ecommerce.ea.annotations.ValidateStoreAccess)")
     public void validateStore(JoinPoint joinPoint) {

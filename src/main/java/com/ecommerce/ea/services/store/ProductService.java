@@ -3,8 +3,7 @@ package com.ecommerce.ea.services.store;
 import com.ecommerce.ea.DTOs.request.store.PriceBySizeRequest;
 import com.ecommerce.ea.DTOs.request.store.ProductRequest;
 import com.ecommerce.ea.DTOs.request.store.SizeRequest;
-import com.ecommerce.ea.DTOs.response.store.ProductResponse;
-import com.ecommerce.ea.DTOs.response.store.SizeResponse;
+import com.ecommerce.ea.DTOs.response.store.*;
 import com.ecommerce.ea.DTOs.update.ProductUpdate;
 import com.ecommerce.ea.entities.auth.Store;
 import com.ecommerce.ea.entities.store.Category;
@@ -72,7 +71,7 @@ public class ProductService implements IProduct {
         // Save the product on the database and store it on "productSaved"
         Product productSaved = productRepository.save(product);
         //Transform "productSaved" into the ProduceResponseType
-        return ProductResponse.ToProductResponse(productSaved);
+        return this.ToProductResponse(productSaved);
     }
 
     ///Edit ProductSingle Objects
@@ -101,7 +100,7 @@ public class ProductService implements IProduct {
         // Save changes on the database and stored it on "productSaved"
         Product productSaved = productRepository.save(product);
         //transform "productSaved" into ProductResponse type
-        return ProductResponse.ToProductResponse(productSaved);
+        return this.ToProductResponse(productSaved);
     }
     ///Delete ProductSingle Objects
     @Override
@@ -120,7 +119,7 @@ public class ProductService implements IProduct {
         //Retrieve all the product from the database (for Admin)
         List<Product> productList = productRepository.findAll();
         //Convert the "productList" into ProductResponse type
-         return productList.stream().map(ProductResponse::ToProductResponse).toList();
+         return productList.stream().map(this::ToProductResponse).toList();
     }
 
 
@@ -131,7 +130,7 @@ public class ProductService implements IProduct {
           Product product =  productRepository.findById(productId)
                 .orElseThrow(()->new BadRequestException("productId not found on the database"));
           //Transform it into productResponse type
-          return ProductResponse.ToProductResponse(product);
+          return this.ToProductResponse(product);
     }
     /// This is like the other findProductById, but this one return the base Product form
     @Override
@@ -144,7 +143,7 @@ public class ProductService implements IProduct {
     public List<ProductResponse> getProductsByStoreId(UUID storeId) {
         return productRepository.FindAllProductsByStoreId(storeId)
                 .stream()
-                .map(ProductResponse::ToProductResponse)
+                .map(this::ToProductResponse)
                 .toList();
     }
 
@@ -154,7 +153,7 @@ public class ProductService implements IProduct {
         return productRepository.FindAllProductsByStoreId(storeId)
                         .stream()
                         .filter(product -> product.getCategory().getCategoryId() == categoryId)
-                        .map(ProductResponse::ToProductResponse)
+                        .map(this::ToProductResponse)
                         .toList();
     }
 
@@ -164,7 +163,7 @@ public class ProductService implements IProduct {
     List<ProductResponse>productResponse = productRepository.FindAllProductsByStoreId(storeId)
                     .stream()
                     .filter(product -> product.getCategory().getCategoryId() == categoryId)
-                    .map(ProductResponse::ToProductResponse)
+                    .map(this::ToProductResponse)
                     .collect(Collectors.toList()); // mutable list
                     Collections.shuffle(productResponse); //mixes the objects
 
@@ -257,6 +256,30 @@ public class ProductService implements IProduct {
             } catch (Exception e) {
                 throw new RuntimeException("Error generating  Excel", e);
             }
+    }
+
+    @Override
+    public ProductResponse ToProductResponse(Product product) {
+        /// Create the "StoreLiteResponse" Object
+        StoreLiteResponse storeLiteResponse = new StoreLiteResponse();
+        storeLiteResponse.setStoreId(product.getStore().getStoreId());
+        storeLiteResponse.setStoreName(product.getStore().getStoreName());
+        /// "CategoryResponse" Initialization
+        CategoryResponse categoryResponse = categoryService.ToCategoryResponse(product.getCategory());
+        /// PriceBySize - List
+       List<PriceBySizeResponse> priceBySize = priceBySizeService.getProductSizesByProductId(product.getProductId());
+        /// "ProductResponse" Initialization
+        ProductResponse response = new ProductResponse();
+        response.setProductId(product.getProductId());
+        response.setProductName(product.getProductName());
+        response.setActive(product.isActive());
+        response.setStore(storeLiteResponse);
+        response.setCategory(categoryResponse);
+        response.setHasSizes(product.isHasSizes());
+        response.setPrice(product.getPrice());
+        response.setPricesBySize(priceBySize);
+
+        return response;
     }
 
 }

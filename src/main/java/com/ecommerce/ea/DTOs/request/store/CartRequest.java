@@ -1,5 +1,6 @@
 package com.ecommerce.ea.DTOs.request.store;
 
+import com.ecommerce.ea.entities.store.Size;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,11 @@ public class CartRequest {
     private boolean isCompleted;
     @NotNull
     private int productId;
+    @NotNull
+    /// Might be true or false
+    private boolean isSize;
+    /// Might be Null
+    private Size sizeObj;
     @NotNull
     private UUID customerId;
 }

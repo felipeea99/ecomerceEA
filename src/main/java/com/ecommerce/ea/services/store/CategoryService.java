@@ -78,5 +78,13 @@ public class CategoryService implements ICategory {
                 .orElseThrow(() -> new BadRequestException("CategoryId not found on the database"));
     }
 
+    @Override
+    public CategoryResponse ToCategoryResponse(Category category) {
+        CategoryResponse categoryResponse = new CategoryResponse();
+        categoryResponse.setCategoryId(category.getCategoryId());
+        categoryResponse.setCategoryName(categoryResponse.getCategoryName());
+        return categoryResponse;
+    }
+
 
 }

@@ -2,6 +2,7 @@ package com.ecommerce.ea.services.store;
 
 import com.ecommerce.ea.DTOs.request.store.CartRequest;
 import com.ecommerce.ea.DTOs.response.store.CartResponse;
+import com.ecommerce.ea.DTOs.response.store.ProductResponse;
 import com.ecommerce.ea.DTOs.update.CartUpdate;
 import com.ecommerce.ea.entities.auth.Customer;
 import com.ecommerce.ea.entities.store.*;
@@ -55,9 +56,9 @@ public class CartService implements ICart {
     public CartResponse editCart(CartUpdate cartUpdate) {
         //Search the cartId
        Cart cart = this.findCartById(cartUpdate.getCartId());
-        // Product Inicialization
+        // Product Initialization
         Product product = productService.findProductByIdBaseForm(cartUpdate.getProductId());
-        // Customer Inicialization
+        // Customer Initialization
         Customer customer = customerService.findCustomerById(cartUpdate.getCustomerId());
 
        //Modify Changes
@@ -65,6 +66,9 @@ public class CartService implements ICart {
         cart.setCustomer(customer);
         cart.setProduct(product);
         cart.setQuantity(cartUpdate.getQuantity());
+        cart.setSizeObj(cartUpdate.getSizeObj());
+        cart.setSize(cartUpdate.isSize());
+
         //save the object in the database and stored on the "cartSaved" object
         Cart cartSaved = cartRepository.save(cart);
         //Convert it from "Cart" type to "CartResponse"
@@ -153,13 +157,11 @@ public class CartService implements ICart {
 
     @Override
     public Cart ToCartObj(CartRequest cartRequest) {
-        /// Product Inicialization
-        Product product = new Product();
-        product = productService.findProductByIdBaseForm(cartRequest.getProductId());
+        /// Product Initialization
+       Product product = productService.findProductByIdBaseForm(cartRequest.getProductId());
 
-        /// Customer Inicialization
-        Customer customer = new Customer();
-        customer = customerService.findCustomerById(cartRequest.getCustomerId());
+        /// Customer Initialization
+        Customer customer = customerService.findCustomerById(cartRequest.getCustomerId());
 
         /// Cart Build
         Cart cart = new Cart();
@@ -172,12 +174,18 @@ public class CartService implements ICart {
 
     @Override
     public CartResponse ToCartResponse(Cart cart) {
+        /// Product Initialization
+       ProductResponse productResponse = productService.ToProductResponse(cart.getProduct());
+        /// Cart Initialization
         CartResponse cartResponse = new CartResponse();
 
         cartResponse.setCartId(cart.getCartId());
         cartResponse.setCompleted(cart.isCompleted());
         cartResponse.setQuantity(cart.getQuantity());
-        cartResponse.setProductId(cart.getProduct().getProductId());
+        cartResponse.setProduct(productResponse);
+        cartResponse.setSize(cart.isSize());
+        cartResponse.setSizeObj(cart.getSizeObj());
+
         cartResponse.setCartId(cart.getCartId());
 
         return cartResponse;

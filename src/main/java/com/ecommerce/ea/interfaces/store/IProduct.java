@@ -14,7 +14,6 @@ public interface IProduct {
     ProductResponse addProduct(ProductRequest productRequest,List<PriceBySizeRequest>priceBySizeList);
     ProductResponse editProduct(ProductUpdate productUpdate);
     Boolean deleteProduct(int productId);
-    //Other Methods
     List<ProductResponse> getAllProducts();
     ProductResponse findProductById(int productId);
     Product findProductByIdBaseForm(int productId);
@@ -22,5 +21,5 @@ public interface IProduct {
     List<ProductResponse> getProductsByCategoryId(int categoryId, UUID storeId);
     List<ProductResponse> getProductsRandomByCategory(int categoryId, UUID storeId);
     ByteArrayOutputStream listProductsExcel(UUID storeId);
-
+    ProductResponse ToProductResponse(Product product);
 }

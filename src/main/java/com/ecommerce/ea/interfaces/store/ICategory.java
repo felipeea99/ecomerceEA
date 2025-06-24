@@ -14,5 +14,5 @@ public interface ICategory {
     CategoryResponse addCategory(CategoryRequest categoryRequest );
     CategoryResponse editCategory(CategoryUpdate categoryUpdate);
     Category findCategoryByIdBaseForm(int categoryID);
-
+    CategoryResponse ToCategoryResponse(Category category);
 }

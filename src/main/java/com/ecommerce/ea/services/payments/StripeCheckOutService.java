@@ -37,6 +37,7 @@ public class StripeCheckOutService {
                                 .build()
                 )
                 ///use the  ID or URL on the frontend to send the user to the checkout
+//               .setSuccessUrl("") if you want it later
                 .setReturnUrl("https://tusitio.com/checkout/return?session_id={CHECKOUT_SESSION_ID}");
 
 
@@ -63,14 +64,11 @@ public class StripeCheckOutService {
             /// Data Initialization
             SessionCreateParams.LineItem lineItem = SessionCreateParams.LineItem.builder()
                     .setQuantity((long)quantity)  //Cart Quantity
-                    .setPriceData(
-                            SessionCreateParams.LineItem.PriceData.builder()
+                    .setPriceData(SessionCreateParams.LineItem.PriceData.builder()
                                     .setCurrency("mxn")
-                                    .setProductData(
-                                            SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                    .setProductData(SessionCreateParams.LineItem.PriceData.ProductData.builder()
                                                     .setName(cart.getProduct().getProductName()) //ProductName
-                                                    .build()
-                                    )
+                                                    .build())
                                     .setUnitAmount(total.multiply(BigDecimal.valueOf(100)).longValueExact()) //get the total in centavos
                                     .build()
                     )

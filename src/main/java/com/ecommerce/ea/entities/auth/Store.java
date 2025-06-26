@@ -35,5 +35,7 @@ public class Store {
     private String stripeAccountId;
     @Column(nullable = false)
     private boolean onboardingCompleted = false;
+    @Column(nullable = false)
+    private boolean enable = false;
 
 }

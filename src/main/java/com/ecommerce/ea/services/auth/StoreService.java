@@ -10,6 +10,7 @@ import com.ecommerce.ea.exceptions.BadRequestException;
 import com.ecommerce.ea.interfaces.auth.IStore;
 import com.ecommerce.ea.repository.auth.StoreRepository;
 import com.ecommerce.ea.repository.auth.UserRepository;
+import com.ecommerce.ea.repository.auth.VerificationTokenRepository;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class StoreService implements IStore {
     private final UserRepository userRepository;
     private final UserAccService userAccService;
 
-    public StoreService(StoreRepository storeRepository, UserRepository userRepository, @Lazy UserAccService userAccService){
+    public StoreService(StoreRepository storeRepository, UserRepository userRepository, @Lazy UserAccService userAccService, VerificationTokenService verificationToken, VerificationTokenRepository verificationTokenRepository){
         this.storeRepository = storeRepository;
         this.userRepository = userRepository;
         this.userAccService = userAccService;
@@ -41,6 +42,7 @@ public class StoreService implements IStore {
         UserAcc userAccObj = userAccService.registerStoreUser(userAcc);
         ///Transform the storeRequest into Store type
         Store store = this.ToStoreObj(storeRequest);
+        store.setEnable(false); ///Verification needed
         ///change the userAcc attributes to the ones of store-email
         userAccObj.setEmail(store.getStoreEmail());
         userAccObj.setUserName(store.getStoreEmail());

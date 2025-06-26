@@ -2,13 +2,13 @@ package com.ecommerce.ea.services.payments;
 
 import com.ecommerce.ea.DTOs.request.payments.OrderItemRequest;
 import com.ecommerce.ea.DTOs.request.payments.CreateOrderRequest;
+import com.ecommerce.ea.DTOs.response.auth.UserResponse;
 import com.ecommerce.ea.DTOs.response.payments.OrderItemResponse;
 import com.ecommerce.ea.DTOs.response.payments.OrderResponse;
 import com.ecommerce.ea.DTOs.update.OrderUpdate;
 import com.ecommerce.ea.entities.auth.Customer;
 import com.ecommerce.ea.entities.store.Address;
 import com.ecommerce.ea.entities.store.Product;
-import com.ecommerce.ea.entities.store.ShoppingHistory;
 import com.ecommerce.ea.entities.store.StatusType;
 import com.ecommerce.ea.entities.auth.Store;
 import com.ecommerce.ea.entities.payments.Order;
@@ -17,6 +17,7 @@ import com.ecommerce.ea.exceptions.BadRequestException;
 import com.ecommerce.ea.interfaces.payments.IOrder;
 import com.ecommerce.ea.repository.payments.OrderRepository;
 import com.ecommerce.ea.services.auth.CustomerService;
+import com.ecommerce.ea.services.auth.UserAccService;
 import com.ecommerce.ea.services.store.AddressService;
 import com.ecommerce.ea.services.store.ProductService;
 import com.ecommerce.ea.services.auth.StoreService;
@@ -164,7 +165,7 @@ public class OrderService implements IOrder {
             header.createCell(7).setCellValue("Productos");
 
             // Obtener lista de órdenes del storeId (deberías tener un repositorio para esto)
-            List<Order> orders = orderRepository.findByStore_StoreId(storeId);
+            List<Order> orders = orderRepository.findAllItemsByStoreId(storeId);
 
             int rowCount = 1;
             for (Order order : orders) {
@@ -249,14 +250,13 @@ public class OrderService implements IOrder {
         orderResponse.setPaymentDate(order.getPaymentDate());
         orderResponse.setPaymentStatus(order.getPaymentStatus().toString());
         orderResponse.setTotalAmount(order.getTotalAmount());
-        orderResponse.setStoreId(order.getStore().getStoreId());
-
+        orderResponse.setStoreName(order.getStore().getStoreName());
+        /// Customer & Address validation
         if (order.getCustomer() != null)
-            orderResponse.setCustomerId(order.getCustomer().getCustomerId());
-
+            orderResponse.setCustomer(order.getCustomer());
+        /// "Address" object initialization
         if (order.getAddress() != null)
-            orderResponse.setAddressId(order.getAddress().getAddressId());
-
+          orderResponse.setAddress(addressService.ToAddressResponse(order.getAddress()));
         return orderResponse;
     }
 

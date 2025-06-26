@@ -17,7 +17,7 @@ public interface ICart {
     Boolean deleteCart(int cartID);
     List<CartResponse> findAllItemsInCartByCustomerId(UUID userId);
     Void operationsInCart(int cartID, boolean isIncrement);
-    Void cartProcessCompleted(UUID customerId , int addressID, String PurchaseUUID);
+    Void cartProcessCompleted(UUID customerId);
     Cart ToCartObj(CartRequest cartRequest);
     CartResponse ToCartResponse(Cart cart);
 }

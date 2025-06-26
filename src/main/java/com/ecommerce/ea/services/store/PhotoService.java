@@ -9,7 +9,10 @@ import com.ecommerce.ea.exceptions.BadRequestException;
 import com.ecommerce.ea.interfaces.store.IPhoto;
 import com.ecommerce.ea.repository.store.PhotoRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PhotoService implements IPhoto {
@@ -42,8 +45,15 @@ public class PhotoService implements IPhoto {
     }
     /// Add Multiples Photos objects to the database
     @Override
-    public List<PhotoResponse> addMultiplePhotos(int productID, List<PhotoRequest> photos) {
-        return null;
+    public List<PhotoResponse> addMultiplePhotos(List<PhotoRequest> photos) {
+        List<PhotoResponse> photoResponseList = new ArrayList<>();
+        for (PhotoRequest photo: photos){
+           PhotoResponse photoSaved = this.addPhoto(photo);
+           this.photoOrder(photo.getProductId());
+            photoResponseList.add(photoSaved);
+
+        }
+        return photoResponseList;
     }
 
     @Override
@@ -110,6 +120,13 @@ public class PhotoService implements IPhoto {
         //it retrieves all the photos on the databases with index of 0
         List<Photo> photoList = photoRepository.findByIndexZero(productId);
         // Convert each photo from photoList into PhotoResponse type
+        return photoList.stream().map(this::ToPhotoResponseObj).toList();
+    }
+    /// This function is used to Collect all the photos from a store using storeId, it is used to avoid calling multiple times the database
+    /// So, it calls one time and after that should make the matches correspondingly
+    @Override
+    public List<PhotoResponse> findAllPhotosByStoreId(UUID storeId) {
+        List<Photo> photoList = photoRepository.findAllPhotosByStoreId(storeId);
         return photoList.stream().map(this::ToPhotoResponseObj).toList();
     }
 

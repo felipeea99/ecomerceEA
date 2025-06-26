@@ -13,11 +13,4 @@ import lombok.Setter;
 public class SizeResponse {
     private int sizeId;
     private String size;
-
-    public static SizeResponse ToSizeResponseObj(Size size){
-        return new SizeResponse(
-                size.getSizeId(),
-                size.getSize()
-        );
-    }
 }

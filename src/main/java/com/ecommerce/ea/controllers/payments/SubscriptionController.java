@@ -1,7 +1,7 @@
 package com.ecommerce.ea.controllers.payments;
 
 import com.ecommerce.ea.DTOs.request.payments.SubscriptionRequest;
-import com.ecommerce.ea.DTOs.response.payments.SubscriptionResponse;
+import com.ecommerce.ea.DTOs.response.payments.SubscriptionDbResponse;
 import com.ecommerce.ea.services.payments.SubscriptionService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
@@ -20,17 +20,17 @@ public class SubscriptionController {
     }
 
     @PostMapping
-    public SubscriptionResponse createSubscription(@RequestBody SubscriptionRequest request) {
+    public SubscriptionDbResponse createSubscription(@RequestBody SubscriptionRequest request) {
         return subscriptionService.createSubscription(request);
     }
 
     @PostMapping("/cancel/{storeId}")
-    public SubscriptionResponse cancelSubscription(@PathVariable UUID storeId) {
+    public SubscriptionDbResponse cancelSubscription(@PathVariable UUID storeId) {
         return subscriptionService.cancelSubscription(storeId);
     }
 
     @GetMapping("/{subscriptionId}")
-    public SubscriptionResponse getSubscriptionById(@PathVariable UUID subscriptionId) {
+    public SubscriptionDbResponse getSubscriptionById(@PathVariable UUID subscriptionId) {
         return subscriptionService.findSubscriptionById(subscriptionId);
     }
 

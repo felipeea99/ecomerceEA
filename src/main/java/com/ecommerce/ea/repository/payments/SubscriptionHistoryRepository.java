@@ -1,7 +1,6 @@
 package com.ecommerce.ea.repository.payments;
 
 import com.ecommerce.ea.DTOs.response.payments.SubscriptionHistoryResponse;
-import com.ecommerce.ea.DTOs.response.payments.SubscriptionResponse;
 import com.ecommerce.ea.entities.payments.SubscriptionHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

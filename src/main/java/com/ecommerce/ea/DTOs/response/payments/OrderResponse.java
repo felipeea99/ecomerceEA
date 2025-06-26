@@ -1,8 +1,8 @@
 package com.ecommerce.ea.DTOs.response.payments;
 
-import com.ecommerce.ea.DTOs.response.auth.CustomerLiteResponse;
 import com.ecommerce.ea.DTOs.response.store.AddressResponse;
 import com.ecommerce.ea.DTOs.response.store.StoreLiteResponse;
+import com.ecommerce.ea.entities.auth.Customer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +25,7 @@ public class OrderResponse {
     private List<OrderItemResponse> items;
     private String storeName;
     private String paymentStatus;
-    private CustomerLiteResponse customer;
+    private Customer customer;
     private StoreLiteResponse store;
     private AddressResponse address;
 }

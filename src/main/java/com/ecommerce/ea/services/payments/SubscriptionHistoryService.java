@@ -1,5 +1,6 @@
 package com.ecommerce.ea.services.payments;
 
+import com.ecommerce.ea.DTOs.response.payments.SubscriptionDbResponse;
 import com.ecommerce.ea.DTOs.response.payments.SubscriptionHistoryResponse;
 import com.ecommerce.ea.entities.payments.SubscriptionDb;
 import com.ecommerce.ea.entities.payments.SubscriptionHistory;
@@ -15,9 +16,11 @@ import java.util.UUID;
 public class SubscriptionHistoryService implements ISubscriptionHistory {
 
     private final SubscriptionHistoryRepository subscriptionHistoryRepository;
+    private final SubscriptionService subscriptionService;
 
-    public SubscriptionHistoryService(SubscriptionHistoryRepository subscriptionHistoryRepository) {
+    public SubscriptionHistoryService(SubscriptionHistoryRepository subscriptionHistoryRepository, SubscriptionService subscriptionService) {
         this.subscriptionHistoryRepository = subscriptionHistoryRepository;
+        this.subscriptionService = subscriptionService;
     }
     /// Search a specific subscriptionHistory its subscriptionHistoryId
     @Override
@@ -56,8 +59,9 @@ public class SubscriptionHistoryService implements ISubscriptionHistory {
 
     @Override
     public SubscriptionHistoryResponse ToSubscriptionHistoryResponse(SubscriptionHistory subscriptionHistory) {
+        SubscriptionDbResponse subscriptionDbResponse = subscriptionService.TOSubscriptionDbResponse(subscriptionHistory.getSubscription());
         SubscriptionHistoryResponse shr = new SubscriptionHistoryResponse();
-        shr.setSubscription(subscriptionHistory.getSubscription());
+        shr.setSubscription(subscriptionDbResponse);
         shr.setSubscriptionHistoryId(subscriptionHistory.getSubscriptionHistoryId());
         return shr;
     }

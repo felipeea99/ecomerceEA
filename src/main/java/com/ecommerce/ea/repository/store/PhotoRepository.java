@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public interface PhotoRepository extends JpaRepository<Photo, Number> {
@@ -16,5 +17,7 @@ public interface PhotoRepository extends JpaRepository<Photo, Number> {
     List<Photo> findByProductIDOrderByPhotosID(@Param("product") int product);
     @Query("SELECT p FROM Photo p WHERE p.product = :product AND p.index = 0")
     List<Photo> findByIndexZero(@Param("product") int product);
+    @Query("SELECT p FROM Photo p WHERE p.product.storeId = :storeId")
+    List<Photo> findAllPhotosByStoreId(@Param("storeId") UUID storeId);
 
 }

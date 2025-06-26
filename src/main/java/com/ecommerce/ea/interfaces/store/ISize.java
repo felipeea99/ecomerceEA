@@ -13,4 +13,5 @@ public interface ISize {
     Boolean deleteSize(int sizeId);
     List<SizeResponse> findAllSizes();
     Size findSizeByIdBaseForm(int sizeId);
+    SizeResponse ToSizeResponse(Size size);
 }

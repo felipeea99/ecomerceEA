@@ -12,5 +12,5 @@ import java.util.UUID;
 @Repository
 public interface ProductRepository extends JpaRepository<Product,Integer> {
     @Query("SELECT p FROM Product p WHERE p.store = :store")
-    List<Product> FindAllProductsByStoreId(@Param("store") UUID store);
+    List<Product> findAllProductsByStoreId(@Param("store") UUID store);
 }

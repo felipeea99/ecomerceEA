@@ -2,7 +2,6 @@ package com.ecommerce.ea.interfaces.payments;
 
 import com.ecommerce.ea.DTOs.request.payments.CreateOrderRequest;
 import com.ecommerce.ea.DTOs.response.payments.OrderResponse;
-import com.ecommerce.ea.DTOs.response.store.ShoppingHistoryResponse;
 import com.ecommerce.ea.DTOs.update.OrderUpdate;
 import com.ecommerce.ea.entities.payments.Order;
 

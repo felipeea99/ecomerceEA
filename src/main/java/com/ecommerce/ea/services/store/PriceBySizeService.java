@@ -2,6 +2,8 @@ package com.ecommerce.ea.services.store;
 
 import com.ecommerce.ea.DTOs.request.store.PriceBySizeRequest;
 import com.ecommerce.ea.DTOs.response.store.PriceBySizeResponse;
+import com.ecommerce.ea.DTOs.response.store.ProductResponse;
+import com.ecommerce.ea.DTOs.response.store.SizeResponse;
 import com.ecommerce.ea.DTOs.update.PriceBySizeUpdate;
 import com.ecommerce.ea.entities.store.PriceBySize;
 import com.ecommerce.ea.entities.store.Product;
@@ -13,6 +15,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class PriceBySizeService implements IPriceSize {
@@ -50,7 +53,7 @@ public class PriceBySizeService implements IPriceSize {
 
         //make changes
          editObj.setProduct(product);
-         editObj.setSizeName(update.getSizeName());
+         editObj.setSize(update.getSizeName());
          editObj.setPrice(update.getPrice());
          PriceBySize priceBySizeSaved = priceSizeRepository.save(editObj);
          return this.ToPriceBySizeResponse(priceBySizeSaved);
@@ -83,7 +86,7 @@ public class PriceBySizeService implements IPriceSize {
     }
     /// This is used for retrieve the priceSize individually
     @Override
-    public PriceBySizeResponse getPriceSizeById(int priceSizeId) {
+    public PriceBySizeResponse findPriceSizeById(int priceSizeId) {
         //Retrieves a specific PriceBySize Object base on a "priceSizeId"
         PriceBySize priceBySize = priceSizeRepository.findById(priceSizeId)
                 .orElseThrow(() -> new BadRequestException("priceSizeId was not found on the database"));
@@ -93,7 +96,7 @@ public class PriceBySizeService implements IPriceSize {
 
     /// Used for retrieve al the productBySize objects from the database of a specific productId
     @Override
-    public List<PriceBySizeResponse> getProductSizesByProductId(int productId) {
+    public List<PriceBySizeResponse> findProductSizesByProductId(int productId) {
         //Retrieves all the PriceBySize by productId
          List<PriceBySize> priceBySizeList = priceSizeRepository.findAllByProductId(productId);
         //Transform tha "priceBySizeList" type into PriceBySizeResponse
@@ -101,20 +104,26 @@ public class PriceBySizeService implements IPriceSize {
     }
 
     @Override
+    public List<PriceBySizeResponse> findAllPriceBySizeByStoreId(UUID storeId) {
+         List<PriceBySize> priceBySizeList = priceSizeRepository.findAllPriceBySizeByStoreId(storeId);
+        return priceBySizeList.stream().map(this::ToPriceBySizeResponse).toList();
+    }
+
+    @Override
     public PriceBySizeResponse ToPriceBySizeResponse(PriceBySize priceBySize) {
-        /// Product Initialization
-        Product product = productService.findProductByIdBaseForm(priceBySize.getProduct().getProductId());
-        /// Size Initialization
-        Size size = sizeService.findSizeByIdBaseForm(priceBySize.getPriceBySizeId());
+        /// ProductResponse and SizeResponse Transformation
+        ProductResponse productResponse =  productService.ToProductResponse(priceBySize.getProduct());
+        SizeResponse sizeResponse = sizeService.ToSizeResponse(priceBySize.getSize());
 
+        /// PriceBySizeResponse Initialization
         PriceBySizeResponse priceSize = new PriceBySizeResponse();
-
         priceSize.setPriceBySizeId(priceBySize.getPriceBySizeId());
-        priceSize.setProductId(product.getProductId());
-        priceSize.setSizeId(size.getSizeId());
+        priceSize.setProductResponse(productResponse);
+        priceSize.setSizeResponse(sizeResponse);
         priceSize.setPrice(priceBySize.getPrice());
 
-        return priceSize;    }
+        return priceSize;
+    }
 
     @Override
     public PriceBySize ToPriceBySizeObj(PriceBySizeRequest request) {
@@ -123,7 +132,7 @@ public class PriceBySizeService implements IPriceSize {
         Size size = sizeService.findSizeByIdBaseForm(request.getSizeId());
 
         PriceBySize priceSize = new PriceBySize();
-        priceSize.setSizeName(size);
+        priceSize.setSize(size);
         priceSize.setPrice(request.getPrice());
         priceSize.setProduct(product);
         return priceSize;

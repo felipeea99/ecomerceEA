@@ -1,17 +1,20 @@
 package com.ecommerce.ea.services.auth;
 
 import com.ecommerce.ea.DTOs.response.auth.LoginDTO;
+import com.ecommerce.ea.DTOs.response.auth.UserResponse;
 import com.ecommerce.ea.entities.auth.UserAcc;
 import com.ecommerce.ea.entities.auth.UserAccPrincipal;
 import com.ecommerce.ea.exceptions.BadRequestException;
 import com.ecommerce.ea.exceptions.UnauthorizedException;
 import com.ecommerce.ea.interfaces.auth.IUserAcc;
 import com.ecommerce.ea.services.store.JWTService;
+import com.stripe.model.tax.Registration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -125,6 +128,18 @@ public class UserAccService {
         }
 
         throw new UnauthorizedException("Invalid user");
+    }
+
+    public UserResponse ToUserResponse(UserAcc userAcc){
+        UserResponse userResponse = new UserResponse();
+        userResponse.setUserId(userAcc.getUserId());
+        userResponse.setUserName(userAcc.getUserName());
+        userResponse.setName(userAcc.getName());
+        userResponse.setUserLastName1(userAcc.getUserLastName1());
+        userResponse.setUserLastName2(userAcc.getUserLastName2());
+        userResponse.setPhoneNumber(userAcc.getPhoneNumber());
+        userResponse.setEmail(userAcc.getEmail());
+        return userResponse;
     }
 
 

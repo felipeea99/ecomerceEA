@@ -1,7 +1,7 @@
 package com.ecommerce.ea.services.payments;
 
 import com.ecommerce.ea.DTOs.request.payments.SubscriptionRequest;
-import com.ecommerce.ea.DTOs.response.payments.SubscriptionResponse;
+import com.ecommerce.ea.DTOs.response.payments.SubscriptionDbResponse;
 import com.ecommerce.ea.entities.auth.Store;
 import com.ecommerce.ea.entities.payments.SubscriptionDb;
 import com.ecommerce.ea.entities.payments.StripeSubscriptionStatus;
@@ -48,7 +48,7 @@ public class SubscriptionService implements ISubscription {
     }
 
     @Override
-    public SubscriptionResponse createSubscription(SubscriptionRequest subscriptionRequest) {
+    public SubscriptionDbResponse createSubscription(SubscriptionRequest subscriptionRequest) {
         try {
             // Crear la subscripción en Stripe
             Subscription stripeSub = Subscription.create(
@@ -88,11 +88,13 @@ public class SubscriptionService implements ISubscription {
 
             subscriptionRepository.save(newSubscription);
 
-            return new SubscriptionResponse(
+            return new SubscriptionDbResponse(
                     newSubscription.getStatus().name(),
                     newSubscription.getStartDate(),
                     newSubscription.getEndDate(),
-                    newSubscription.getStore().getStoreName()
+                    newSubscription.getStore().getStoreName(),
+                    newSubscription.getStripePriceId(),
+                    newSubscription.getStripeCustomerId()
             );
         } catch (StripeException e) {
             throw new RuntimeException("Error creating subscription with Stripe", e);
@@ -100,7 +102,7 @@ public class SubscriptionService implements ISubscription {
     }
 
     @Override
-    public SubscriptionResponse cancelSubscription(UUID storeId) {
+    public SubscriptionDbResponse cancelSubscription(UUID storeId) {
         SubscriptionDb subscription = subscriptionRepository.findByStore_StoreId(storeId)
                 .orElseThrow(() -> new RuntimeException("Subscription not found"));
 
@@ -112,11 +114,13 @@ public class SubscriptionService implements ISubscription {
             subscription.setEndDate(LocalDate.now());
             subscriptionRepository.save(subscription);
 
-            return new SubscriptionResponse(
+            return new SubscriptionDbResponse(
                     subscription.getStatus().name(),
                     subscription.getStartDate(),
                     subscription.getEndDate(),
-                    subscription.getStore().getStoreName()
+                    subscription.getStore().getStoreName(),
+                    subscription.getStripePriceId(),
+                    subscription.getStripeCustomerId()
             );
         } catch (StripeException e) {
             throw new RuntimeException("Error cancelling subscription", e);
@@ -124,15 +128,17 @@ public class SubscriptionService implements ISubscription {
     }
 
     @Override
-    public SubscriptionResponse findSubscriptionById(UUID subscriptionId) {
+    public SubscriptionDbResponse findSubscriptionById(UUID subscriptionId) {
         SubscriptionDb subscription = subscriptionRepository.findById(subscriptionId)
                 .orElseThrow(() -> new RuntimeException("Subscription not found"));
 
-        return new SubscriptionResponse(
+        return new SubscriptionDbResponse(
                 subscription.getStatus().name(),
                 subscription.getStartDate(),
                 subscription.getEndDate(),
-                subscription.getStore().getStoreName()
+                subscription.getStore().getStoreName(),
+                subscription.getStripePriceId(),
+                subscription.getStripeCustomerId()
         );
     }
 
@@ -192,6 +198,18 @@ public class SubscriptionService implements ISubscription {
         } catch (Exception e) {
             throw new RuntimeException("Invalid Stripe webhook", e);
         }
+    }
+
+    @Override
+    public SubscriptionDbResponse TOSubscriptionDbResponse(SubscriptionDb subscriptionDb) {
+        SubscriptionDbResponse subscriptionDbResponse = new SubscriptionDbResponse();
+        subscriptionDbResponse.setStatus(subscriptionDb.getStatus().toString());
+        subscriptionDbResponse.setEndDate(subscriptionDb.getEndDate());
+        subscriptionDbResponse.setStartDate(subscriptionDb.getStartDate());
+        subscriptionDbResponse.setStoreName(subscriptionDb.getStore().getStoreName());
+        subscriptionDbResponse.setStripePriceId(subscriptionDb.getStripePriceId());
+        subscriptionDbResponse.setStripeCustomerId(subscriptionDb.getStripeCustomerId());
+        return subscriptionDbResponse;
     }
 
 }

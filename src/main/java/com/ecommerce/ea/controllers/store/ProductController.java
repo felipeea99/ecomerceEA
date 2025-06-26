@@ -4,6 +4,7 @@ import com.ecommerce.ea.AOP_Functions.annotations.ValidateStoreAccess;
 import com.ecommerce.ea.AOP_Functions.context.StoreContextHolder;
 import com.ecommerce.ea.DTOs.request.store.PriceBySizeRequest;
 import com.ecommerce.ea.DTOs.request.store.ProductRequest;
+import com.ecommerce.ea.DTOs.response.store.ProductDetailsResponse;
 import com.ecommerce.ea.DTOs.response.store.ProductResponse;
 import com.ecommerce.ea.DTOs.update.ProductUpdate;
 import com.ecommerce.ea.entities.store.PriceBySize;
@@ -66,6 +67,21 @@ public class ProductController {
     public List<ProductResponse> getProductsByStoreId(){
         UUID storeId = StoreContextHolder.getStoreId();
         return productService.getProductsByStoreId(storeId);
+    }
+
+    /// This is the EndPoint that calls the main view for each object
+    @GetMapping("/{storeName}/findProductDetailsByProductId/{productId}")
+    public ProductDetailsResponse findProductDetailsByProductId(int productId){
+        UUID storeId = StoreContextHolder.getStoreId();
+        return productService.findProductDetailsByProductId(productId);
+    }
+
+    /// This is the EndPoint that calls all the product referring to a certain store
+    @ValidateStoreAccess
+    @GetMapping("/{storeName}/findProductDetailsByStoreId")
+    public List<ProductDetailsResponse> findProductDetailsByStoreId(){
+        UUID storeId = StoreContextHolder.getStoreId();
+        return productService.findProductDetailsByStoreId(storeId);
     }
 
     @ValidateStoreAccess

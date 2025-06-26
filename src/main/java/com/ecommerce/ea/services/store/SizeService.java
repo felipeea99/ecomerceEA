@@ -28,7 +28,7 @@ public class SizeService implements ISize {
         //Save the object on the database and stored it on "sizeSaved" variable
         Size sizeSaved = sizeRepository.save(size);
         //Convert it into sizeResponse
-        return SizeResponse.ToSizeResponseObj(sizeSaved);
+        return this.ToSizeResponse(sizeSaved);
     }
 
     /// Edit a SizeObject from the database base on a given object
@@ -43,7 +43,7 @@ public class SizeService implements ISize {
         //Save the Changes
         Size sizeSaved = sizeRepository.save(size);
         //Transform the "sizeSaved" variable into SizeResponse type
-       return SizeResponse.ToSizeResponseObj(sizeSaved);
+       return this.ToSizeResponse(sizeSaved);
     }
 
     /// Delete a SizeObject from the database base on a given sizeId
@@ -62,11 +62,19 @@ public class SizeService implements ISize {
         //retrieve all the size objects from the database
         List<Size> sizeList =  sizeRepository.findAll();
         //Transform it into SizeResponseType
-        return sizeList.stream().map(SizeResponse::ToSizeResponseObj).toList();
+        return sizeList.stream().map(this::ToSizeResponse).toList();
     }
 
     @Override
     public Size findSizeByIdBaseForm(int sizeId) {
         return sizeRepository.findById(sizeId).orElseThrow(() -> new BadRequestException("sizeId was not found on the database"));
+    }
+
+    @Override
+    public SizeResponse ToSizeResponse(Size size) {
+        SizeResponse sizeResponse = new SizeResponse();
+        sizeResponse.setSize(size.getSize());
+        sizeResponse.setSizeId(size.getSizeId());
+        return null;
     }
 }

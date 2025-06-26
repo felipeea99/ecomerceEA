@@ -12,5 +12,5 @@ import lombok.Setter;
 @Setter
 public class SubscriptionHistoryResponse {
     private int subscriptionHistoryId;
-    private SubscriptionDb subscription;
+    private SubscriptionDbResponse subscription;
 }

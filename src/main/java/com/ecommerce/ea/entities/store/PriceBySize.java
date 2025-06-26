@@ -21,7 +21,7 @@ public class PriceBySize {
 
     @ManyToOne
     @JoinColumn(name = "sizeId", nullable = false)
-    private Size sizeName;
+    private Size size;
 
     @ManyToOne
     @JoinColumn(name = "productId", nullable = false)

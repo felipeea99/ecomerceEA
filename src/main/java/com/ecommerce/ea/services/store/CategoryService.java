@@ -2,7 +2,7 @@ package com.ecommerce.ea.services.store;
 
 import com.ecommerce.ea.DTOs.request.store.CategoryRequest;
 import com.ecommerce.ea.DTOs.response.store.CategoryResponse;
-import com.ecommerce.ea.DTOs.update.CategoryUpdate;
+import com.ecommerce.ea.DTOs.update.store.CategoryUpdate;
 import com.ecommerce.ea.entities.store.Category;
 import com.ecommerce.ea.exceptions.BadRequestException;
 import com.ecommerce.ea.interfaces.store.ICategory;

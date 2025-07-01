@@ -2,7 +2,7 @@ package com.ecommerce.ea.controllers.store;
 
 import com.ecommerce.ea.DTOs.request.store.SizeRequest;
 import com.ecommerce.ea.DTOs.response.store.SizeResponse;
-import com.ecommerce.ea.DTOs.update.SizeUpdate;
+import com.ecommerce.ea.DTOs.update.store.SizeUpdate;
 import com.ecommerce.ea.services.store.SizeService;
 import org.springframework.web.bind.annotation.*;
 

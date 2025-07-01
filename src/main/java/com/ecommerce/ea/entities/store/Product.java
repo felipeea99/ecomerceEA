@@ -29,6 +29,7 @@ public class Product {
     private boolean isActive;
     private boolean hasSizes;
     private BigDecimal price;
+    private String description;
 
     @NotNull
     @ManyToOne

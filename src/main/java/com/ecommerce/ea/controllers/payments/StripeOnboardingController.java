@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/stripe")
+@RequestMapping("/api/onboarding")
 public class StripeOnboardingController {
 
     private final StripeOnboardingService stripeService;

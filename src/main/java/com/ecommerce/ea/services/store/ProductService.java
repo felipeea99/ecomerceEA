@@ -3,7 +3,7 @@ package com.ecommerce.ea.services.store;
 import com.ecommerce.ea.DTOs.request.store.PriceBySizeRequest;
 import com.ecommerce.ea.DTOs.request.store.ProductRequest;
 import com.ecommerce.ea.DTOs.response.store.*;
-import com.ecommerce.ea.DTOs.update.ProductUpdate;
+import com.ecommerce.ea.DTOs.update.store.ProductUpdate;
 import com.ecommerce.ea.entities.auth.Store;
 import com.ecommerce.ea.entities.store.Category;
 import com.ecommerce.ea.entities.store.PriceBySize;
@@ -88,6 +88,7 @@ public class ProductService implements IProduct {
         product.setProductName(productUpdate.getProductName());
         product.setActive(productUpdate.isActive());
         product.setHasSizes(productUpdate.isHasSizes());
+        product.setDescription(productUpdate.getDescription());
         //if it is true
         if (productUpdate.isHasSizes()){
             product.setPrice(null);
@@ -195,7 +196,7 @@ public class ProductService implements IProduct {
         List<PriceBySizeResponse> priceBySizeResponseList = priceBySizeService.findAllPriceBySizeByStoreId(storeId);
         /// Group the photos and priceBySize
         Map<Integer, List<PhotoResponse>> photoByProductId = photoResponseList.stream().collect(Collectors.groupingBy(PhotoResponse::getProductId));
-        Map<Integer, List<PriceBySizeResponse>> priceBySizeProductId = priceBySizeResponseList.stream().collect(Collectors.groupingBy(prop -> prop.getProductResponse().getProductId()));
+        Map<Integer, List<PriceBySizeResponse>> priceBySizeProductId = priceBySizeResponseList.stream().collect(Collectors.groupingBy(prop -> prop.getProduct().getProductId()));
         /// ProductDetails Initialization
         List<ProductDetailsResponse> productDetailsList = new ArrayList<>();
         /// Match with the product.productId each list

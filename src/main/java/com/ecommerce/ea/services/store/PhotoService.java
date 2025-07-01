@@ -2,7 +2,7 @@ package com.ecommerce.ea.services.store;
 
 import com.ecommerce.ea.DTOs.request.store.PhotoRequest;
 import com.ecommerce.ea.DTOs.response.store.PhotoResponse;
-import com.ecommerce.ea.DTOs.update.PhotoUpdate;
+import com.ecommerce.ea.DTOs.update.store.PhotoUpdate;
 import com.ecommerce.ea.entities.store.Photo;
 import com.ecommerce.ea.entities.store.Product;
 import com.ecommerce.ea.exceptions.BadRequestException;
@@ -59,7 +59,7 @@ public class PhotoService implements IPhoto {
     @Override
     public PhotoResponse editPhoto(PhotoUpdate photoUpdate) {
         // Photo Validation
-        Photo photo = this.findByPhotoIdBaseForm(photoUpdate.getPhotoID());
+        Photo photo = this.findByPhotoIdBaseForm(photoUpdate.getPhotoId());
 
         // Product Validation
         Product product = productService.findProductByIdBaseForm(photoUpdate.getProductId());
@@ -146,7 +146,6 @@ public class PhotoService implements IPhoto {
         /// Photo transformation
         Photo photo = new Photo();
         photo.setPhotoValue(photoRequest.getPhotoValue());
-        photo.setIndex(photoRequest.getIndex());
         photo.setProduct(product);
 
         return photo;

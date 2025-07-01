@@ -4,13 +4,18 @@ import com.ecommerce.ea.DTOs.email.Email;
 import com.ecommerce.ea.interfaces.email.IEmail;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.mail.javamail.JavaMailSender;
 
 @Service
 public class EmailService implements IEmail {
-
+    /// The email from the application.properties
+    @Value("${spring.mail.username}")
+    private String fromAddress;
+    @Value("${domain}")
+    private String domain;
     private final JavaMailSender mailSender;
 
     public EmailService(JavaMailSender mailSender) {
@@ -24,11 +29,13 @@ public class EmailService implements IEmail {
             MimeMessageHelper helper = new MimeMessageHelper(message, "utf-8");
 
             String htmlTemplate = readFile();
-            htmlTemplate = htmlTemplate.replace("${message}", email.getBody());
+
+            String activationLink = domain + "/verify?token=" + email.getBody(); // ajusta el dominio real
+            htmlTemplate = htmlTemplate.replace("${activationLink}", activationLink);
 
             helper.setText(htmlTemplate, true);
             helper.setTo(email.getToAddress());
-            helper.setFrom(email.getFromAddress());
+            helper.setFrom(fromAddress);
             helper.setSubject(email.getSubject());
 
             mailSender.send(message);

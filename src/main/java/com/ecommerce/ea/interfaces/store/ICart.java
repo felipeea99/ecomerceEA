@@ -2,7 +2,7 @@ package com.ecommerce.ea.interfaces.store;
 
 import com.ecommerce.ea.DTOs.request.store.CartRequest;
 import com.ecommerce.ea.DTOs.response.store.CartResponse;
-import com.ecommerce.ea.DTOs.update.CartUpdate;
+import com.ecommerce.ea.DTOs.update.store.CartUpdate;
 import com.ecommerce.ea.entities.store.Cart;
 
 

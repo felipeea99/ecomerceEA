@@ -4,7 +4,7 @@ import com.ecommerce.ea.DTOs.request.store.PriceBySizeRequest;
 import com.ecommerce.ea.DTOs.response.store.PriceBySizeResponse;
 import com.ecommerce.ea.DTOs.response.store.ProductResponse;
 import com.ecommerce.ea.DTOs.response.store.SizeResponse;
-import com.ecommerce.ea.DTOs.update.PriceBySizeUpdate;
+import com.ecommerce.ea.DTOs.update.store.PriceBySizeUpdate;
 import com.ecommerce.ea.entities.store.PriceBySize;
 import com.ecommerce.ea.entities.store.Product;
 import com.ecommerce.ea.entities.store.Size;
@@ -53,7 +53,7 @@ public class PriceBySizeService implements IPriceSize {
 
         //make changes
          editObj.setProduct(product);
-         editObj.setSize(update.getSizeName());
+         editObj.setSize(update.getSize());
          editObj.setPrice(update.getPrice());
          PriceBySize priceBySizeSaved = priceSizeRepository.save(editObj);
          return this.ToPriceBySizeResponse(priceBySizeSaved);
@@ -118,8 +118,8 @@ public class PriceBySizeService implements IPriceSize {
         /// PriceBySizeResponse Initialization
         PriceBySizeResponse priceSize = new PriceBySizeResponse();
         priceSize.setPriceBySizeId(priceBySize.getPriceBySizeId());
-        priceSize.setProductResponse(productResponse);
-        priceSize.setSizeResponse(sizeResponse);
+        priceSize.setProduct(productResponse);
+        priceSize.setSize(sizeResponse);
         priceSize.setPrice(priceBySize.getPrice());
 
         return priceSize;

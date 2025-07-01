@@ -10,7 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PhotoResponse {
-    private int photoID;
+    private int photoId;
     private String photoValue;
     private int index;
     private int productId;

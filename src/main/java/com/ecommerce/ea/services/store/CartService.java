@@ -3,20 +3,16 @@ package com.ecommerce.ea.services.store;
 import com.ecommerce.ea.DTOs.request.store.CartRequest;
 import com.ecommerce.ea.DTOs.response.store.CartResponse;
 import com.ecommerce.ea.DTOs.response.store.ProductResponse;
-import com.ecommerce.ea.DTOs.update.CartUpdate;
+import com.ecommerce.ea.DTOs.response.store.SizeResponse;
+import com.ecommerce.ea.DTOs.update.store.CartUpdate;
 import com.ecommerce.ea.entities.auth.Customer;
-import com.ecommerce.ea.entities.payments.Order;
 import com.ecommerce.ea.entities.store.*;
 import com.ecommerce.ea.exceptions.BadRequestException;
 import com.ecommerce.ea.interfaces.store.ICart;
-import com.ecommerce.ea.repository.payments.OrderRepository;
-import com.ecommerce.ea.repository.store.AddressRepository;
 import com.ecommerce.ea.repository.store.CartRepository;
 import com.ecommerce.ea.services.auth.CustomerService;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,11 +22,13 @@ public class CartService implements ICart {
     private final CartRepository cartRepository;
     private final ProductService productService;
     private final CustomerService customerService;
+    private final SizeService sizeService;
 
-    public CartService(CartRepository cartRepository, ProductService productService, CustomerService customerService){
+    public CartService(CartRepository cartRepository, ProductService productService, CustomerService customerService, SizeService sizeService){
         this.cartRepository  = cartRepository;
         this.productService = productService;
         this.customerService = customerService;
+        this.sizeService = sizeService;
     }
 
     @Override
@@ -58,13 +56,14 @@ public class CartService implements ICart {
         Product product = productService.findProductByIdBaseForm(cartUpdate.getProductId());
         // Customer Initialization
         Customer customer = customerService.findCustomerById(cartUpdate.getCustomerId());
-
+        // SizeResponse Initialization
+        Size size = sizeService.ToSizeObject(cartUpdate.getSizeObj());
        //Modify Changes
         cart.setCompleted(cartUpdate.isCompleted());
         cart.setCustomer(customer);
         cart.setProduct(product);
         cart.setQuantity(cartUpdate.getQuantity());
-        cart.setSizeObj(cartUpdate.getSizeObj());
+        cart.setSizeObj(size);
         cart.setSize(cartUpdate.isSize());
 
         //save the object in the database and stored on the "cartSaved" object
@@ -158,17 +157,18 @@ public class CartService implements ICart {
 
     @Override
     public CartResponse ToCartResponse(Cart cart) {
+        /// SizeResponse Initialization
+       SizeResponse size = sizeService.ToSizeResponse(cart.getSizeObj());
         /// Product Initialization
        ProductResponse productResponse = productService.ToProductResponse(cart.getProduct());
         /// Cart Initialization
         CartResponse cartResponse = new CartResponse();
-
         cartResponse.setCartId(cart.getCartId());
         cartResponse.setCompleted(cart.isCompleted());
         cartResponse.setQuantity(cart.getQuantity());
         cartResponse.setProduct(productResponse);
         cartResponse.setSize(cart.isSize());
-        cartResponse.setSizeObj(cart.getSizeObj());
+        cartResponse.setSizeObj(size);
 
         cartResponse.setCartId(cart.getCartId());
 

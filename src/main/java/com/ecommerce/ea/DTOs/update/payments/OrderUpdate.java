@@ -1,4 +1,4 @@
-package com.ecommerce.ea.DTOs.update;
+package com.ecommerce.ea.DTOs.update.payments;
 
 
 import java.math.BigDecimal;

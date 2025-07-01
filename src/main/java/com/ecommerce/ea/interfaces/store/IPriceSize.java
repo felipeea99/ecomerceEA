@@ -2,8 +2,7 @@ package com.ecommerce.ea.interfaces.store;
 
 import com.ecommerce.ea.DTOs.request.store.PriceBySizeRequest;
 import com.ecommerce.ea.DTOs.response.store.PriceBySizeResponse;
-import com.ecommerce.ea.DTOs.update.PriceBySizeUpdate;
-import com.ecommerce.ea.entities.store.Photo;
+import com.ecommerce.ea.DTOs.update.store.PriceBySizeUpdate;
 import com.ecommerce.ea.entities.store.PriceBySize;
 
 import java.util.List;

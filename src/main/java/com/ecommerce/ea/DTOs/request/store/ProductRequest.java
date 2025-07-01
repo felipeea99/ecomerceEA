@@ -1,5 +1,6 @@
 package com.ecommerce.ea.DTOs.request.store;
 
+import com.ecommerce.ea.DTOs.response.store.PriceBySizeResponse;
 import com.ecommerce.ea.entities.store.PriceBySize;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -31,5 +32,7 @@ public class ProductRequest {
 
     private boolean hasSizes;
     private BigDecimal price;
-    private List<PriceBySize> pricesBySize = new ArrayList<>();
+    private String description;
+
+    private List<PriceBySizeResponse> pricesBySize = new ArrayList<>();
 }

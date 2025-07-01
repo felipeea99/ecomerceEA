@@ -1,5 +1,6 @@
-package com.ecommerce.ea.DTOs.update;
+package com.ecommerce.ea.DTOs.update.store;
 
+import com.ecommerce.ea.DTOs.response.store.SizeResponse;
 import com.ecommerce.ea.entities.store.Size;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -27,7 +28,7 @@ public class CartUpdate {
     /// Might be true or false
     private boolean isSize;
     /// Might be Null
-    private Size sizeObj;
+    private SizeResponse sizeObj;
     @NotNull
     private UUID customerId;
 }

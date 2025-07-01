@@ -2,7 +2,7 @@ package com.ecommerce.ea.interfaces.store;
 
 import com.ecommerce.ea.DTOs.request.store.PhotoRequest;
 import com.ecommerce.ea.DTOs.response.store.PhotoResponse;
-import com.ecommerce.ea.DTOs.update.PhotoUpdate;
+import com.ecommerce.ea.DTOs.update.store.PhotoUpdate;
 import com.ecommerce.ea.entities.store.Photo;
 
 import java.util.List;

@@ -4,7 +4,7 @@ import com.ecommerce.ea.AOP_Functions.annotations.ValidateStoreAccess;
 import com.ecommerce.ea.AOP_Functions.context.StoreContextHolder;
 import com.ecommerce.ea.DTOs.request.store.CartRequest;
 import com.ecommerce.ea.DTOs.response.store.CartResponse;
-import com.ecommerce.ea.DTOs.update.CartUpdate;
+import com.ecommerce.ea.DTOs.update.store.CartUpdate;
 import com.ecommerce.ea.services.store.CartService;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +50,11 @@ public class CartController {
         /// Retrieve the customerId from the context provided by @ValidateStoreAccess
         UUID customerId = StoreContextHolder.getCustomerId();
         return this.cartService.findAllItemsInCartByCustomerId(customerId);
+    }
+
+    @PutMapping("/operations/{cartId}/{isIncrement}")
+    public void operationsInCart(@PathVariable int cartId, @PathVariable boolean isIncrement) {
+        cartService.operationsInCart(cartId, isIncrement);
     }
 
 }

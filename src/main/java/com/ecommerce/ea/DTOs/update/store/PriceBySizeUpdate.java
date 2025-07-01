@@ -1,4 +1,4 @@
-package com.ecommerce.ea.DTOs.update;
+package com.ecommerce.ea.DTOs.update.store;
 
 import com.ecommerce.ea.entities.store.Size;
 import jakarta.persistence.JoinColumn;
@@ -20,7 +20,7 @@ public class PriceBySizeUpdate {
     private int priceBySizeId;
     @ManyToOne
     @JoinColumn(name = "sizeId", nullable = false)
-    private Size sizeName;
+    private Size size;
     @Min(0)
     private BigDecimal price;
     private int productId;

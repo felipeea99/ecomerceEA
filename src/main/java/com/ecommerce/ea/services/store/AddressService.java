@@ -2,7 +2,7 @@ package com.ecommerce.ea.services.store;
 
 import com.ecommerce.ea.DTOs.request.store.AddressRequest;
 import com.ecommerce.ea.DTOs.response.store.AddressResponse;
-import com.ecommerce.ea.DTOs.update.AddressUpdate;
+import com.ecommerce.ea.DTOs.update.store.AddressUpdate;
 import com.ecommerce.ea.entities.store.Address;
 import com.ecommerce.ea.entities.auth.Customer;
 import com.ecommerce.ea.exceptions.BadRequestException;

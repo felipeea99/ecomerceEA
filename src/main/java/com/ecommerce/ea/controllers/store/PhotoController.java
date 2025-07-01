@@ -3,7 +3,7 @@ package com.ecommerce.ea.controllers.store;
 import com.ecommerce.ea.AOP_Functions.annotations.ValidateStoreAccess;
 import com.ecommerce.ea.DTOs.request.store.PhotoRequest;
 import com.ecommerce.ea.DTOs.response.store.PhotoResponse;
-import com.ecommerce.ea.DTOs.update.PhotoUpdate;
+import com.ecommerce.ea.DTOs.update.store.PhotoUpdate;
 import com.ecommerce.ea.services.store.PhotoService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,5 +1,6 @@
 package com.ecommerce.ea.DTOs.response.payments;
 
+import com.ecommerce.ea.DTOs.response.auth.CustomerResponse;
 import com.ecommerce.ea.DTOs.response.store.AddressResponse;
 import com.ecommerce.ea.DTOs.response.store.StoreLiteResponse;
 import com.ecommerce.ea.entities.auth.Customer;
@@ -25,7 +26,7 @@ public class OrderResponse {
     private List<OrderItemResponse> items;
     private String storeName;
     private String paymentStatus;
-    private Customer customer;
+    private CustomerResponse customer;
     private StoreLiteResponse store;
     private AddressResponse address;
 }

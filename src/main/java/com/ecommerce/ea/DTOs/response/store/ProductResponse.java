@@ -20,6 +20,7 @@ public class ProductResponse {
     private boolean isActive;
     private boolean hasSizes;
     private BigDecimal price;
+    private String description;
 
     private StoreLiteResponse store;
     private CategoryResponse category;

@@ -14,7 +14,6 @@ import lombok.Setter;
 public class PhotoRequest {
     @NotBlank(message = "photoValue is mandatory")
     private String photoValue;
-    private int index;
     @NotNull(message = "productId is mandatory")
     private int productId;
     

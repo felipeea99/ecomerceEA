@@ -2,7 +2,7 @@ package com.ecommerce.ea.services.store;
 
 import com.ecommerce.ea.DTOs.request.store.SizeRequest;
 import com.ecommerce.ea.DTOs.response.store.SizeResponse;
-import com.ecommerce.ea.DTOs.update.SizeUpdate;
+import com.ecommerce.ea.DTOs.update.store.SizeUpdate;
 import com.ecommerce.ea.entities.store.Size;
 import com.ecommerce.ea.exceptions.BadRequestException;
 import com.ecommerce.ea.interfaces.store.ISize;
@@ -75,6 +75,14 @@ public class SizeService implements ISize {
         SizeResponse sizeResponse = new SizeResponse();
         sizeResponse.setSize(size.getSize());
         sizeResponse.setSizeId(size.getSizeId());
-        return null;
+        return sizeResponse;
+    }
+
+    @Override
+    public Size ToSizeObject(SizeResponse sizeResponse) {
+        Size size = new Size();
+        size.setSize(sizeResponse.getSize());
+        size.setSizeId(sizeResponse.getSizeId());
+        return size;
     }
 }

@@ -2,7 +2,7 @@ package com.ecommerce.ea.controllers.store;
 
 import com.ecommerce.ea.DTOs.request.store.CategoryRequest;
 import com.ecommerce.ea.DTOs.response.store.CategoryResponse;
-import com.ecommerce.ea.DTOs.update.CategoryUpdate;
+import com.ecommerce.ea.DTOs.update.store.CategoryUpdate;
 import com.ecommerce.ea.services.store.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +44,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{categoryId}")
-    public Boolean deleteCategory(@RequestParam int categoryId){
+    public Boolean deleteCategory(@PathVariable int categoryId){
         return this.categoryService.deleteCategory(categoryId);
     }
 

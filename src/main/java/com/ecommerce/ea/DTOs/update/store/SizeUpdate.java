@@ -1,4 +1,4 @@
-package com.ecommerce.ea.DTOs.update;
+package com.ecommerce.ea.DTOs.update.store;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

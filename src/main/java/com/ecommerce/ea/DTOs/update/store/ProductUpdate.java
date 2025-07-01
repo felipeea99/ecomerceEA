@@ -1,4 +1,4 @@
-package com.ecommerce.ea.DTOs.update;
+package com.ecommerce.ea.DTOs.update.store;
 
 import com.ecommerce.ea.entities.store.PriceBySize;
 import jakarta.validation.constraints.NotBlank;
@@ -33,6 +33,7 @@ public class ProductUpdate {
     private int categoryId;
 
     private boolean hasSizes;
+    private String description;
 
     private BigDecimal price;
 

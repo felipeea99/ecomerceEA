@@ -1,21 +1,17 @@
-package com.ecommerce.ea.DTOs.request.payments;
+package com.ecommerce.ea.DTOs.response.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
 import java.util.UUID;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateOrderRequest {
-    private UUID storeId;
+public class CustomerResponse {
     private UUID customerId;
-    private int addressId;
-    private List<OrderItemRequest> items;
+    private UserResponse user;
 }
-

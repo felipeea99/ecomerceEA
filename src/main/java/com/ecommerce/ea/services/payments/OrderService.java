@@ -2,10 +2,11 @@ package com.ecommerce.ea.services.payments;
 
 import com.ecommerce.ea.DTOs.request.payments.OrderItemRequest;
 import com.ecommerce.ea.DTOs.request.payments.CreateOrderRequest;
+import com.ecommerce.ea.DTOs.response.auth.CustomerResponse;
 import com.ecommerce.ea.DTOs.response.auth.UserResponse;
 import com.ecommerce.ea.DTOs.response.payments.OrderItemResponse;
 import com.ecommerce.ea.DTOs.response.payments.OrderResponse;
-import com.ecommerce.ea.DTOs.update.OrderUpdate;
+import com.ecommerce.ea.DTOs.update.payments.OrderUpdate;
 import com.ecommerce.ea.entities.auth.Customer;
 import com.ecommerce.ea.entities.store.Address;
 import com.ecommerce.ea.entities.store.Product;
@@ -43,14 +44,16 @@ public class OrderService implements IOrder {
     private final CustomerService customerService;
     private final AddressService addressService;
     private final  OrderItemService orderItemService;
+    private final UserAccService userAccService;
 
-    public OrderService(OrderRepository orderRepository, StoreService storeService, ProductService productService, CustomerService customerService, AddressService addressService, OrderItemService orderItemService) {
+    public OrderService(OrderRepository orderRepository, StoreService storeService, ProductService productService, CustomerService customerService, AddressService addressService, OrderItemService orderItemService, UserAccService userAccService) {
         this.orderRepository = orderRepository;
         this.storeService = storeService;
         this.productService = productService;
         this.customerService = customerService;
         this.addressService = addressService;
         this.orderItemService = orderItemService;
+        this.userAccService = userAccService;
     }
 
     @Override
@@ -251,9 +254,13 @@ public class OrderService implements IOrder {
         orderResponse.setPaymentStatus(order.getPaymentStatus().toString());
         orderResponse.setTotalAmount(order.getTotalAmount());
         orderResponse.setStoreName(order.getStore().getStoreName());
-        /// Customer & Address validation
+        /// CustomerResponse & Address validation
+        UserResponse userResponse = userAccService.ToUserResponse(order.getCustomer().getUser());
+        CustomerResponse customerResponse = new CustomerResponse();
+        customerResponse.setCustomerId(order.getCustomer().getCustomerId());
+        customerResponse.setUser(userResponse);
         if (order.getCustomer() != null)
-            orderResponse.setCustomer(order.getCustomer());
+            orderResponse.setCustomer(customerResponse);
         /// "Address" object initialization
         if (order.getAddress() != null)
           orderResponse.setAddress(addressService.ToAddressResponse(order.getAddress()));

@@ -4,7 +4,7 @@ import com.ecommerce.ea.AOP_Functions.annotations.ValidateStoreAccess;
 import com.ecommerce.ea.AOP_Functions.context.StoreContextHolder;
 import com.ecommerce.ea.DTOs.request.store.AddressRequest;
 import com.ecommerce.ea.DTOs.response.store.AddressResponse;
-import com.ecommerce.ea.DTOs.update.AddressUpdate;
+import com.ecommerce.ea.DTOs.update.store.AddressUpdate;
 import com.ecommerce.ea.services.store.AddressService;
 import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;

@@ -1,6 +1,5 @@
 package com.ecommerce.ea.DTOs.response.store;
 
-import com.ecommerce.ea.entities.store.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,8 +14,8 @@ import java.math.BigDecimal;
 public class PriceBySizeResponse {
 
     private int priceBySizeId;
-    private ProductResponse productResponse;
-    private SizeResponse sizeResponse;
+    private ProductResponse product;
+    private SizeResponse size;
     private BigDecimal price;
 
 }

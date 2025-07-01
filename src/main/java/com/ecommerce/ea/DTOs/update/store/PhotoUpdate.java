@@ -1,4 +1,4 @@
-package com.ecommerce.ea.DTOs.update;
+package com.ecommerce.ea.DTOs.update.store;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PhotoUpdate {
     @NotNull(message = "photoID is mandatory")
-    private int photoID;
+    private int photoId;
 
     @NotBlank(message = "photoValue is mandatory")
     private String photoValue;

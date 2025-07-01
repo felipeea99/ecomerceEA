@@ -4,7 +4,7 @@ import com.ecommerce.ea.DTOs.request.store.PriceBySizeRequest;
 import com.ecommerce.ea.DTOs.request.store.ProductRequest;
 import com.ecommerce.ea.DTOs.response.store.ProductDetailsResponse;
 import com.ecommerce.ea.DTOs.response.store.ProductResponse;
-import com.ecommerce.ea.DTOs.update.ProductUpdate;
+import com.ecommerce.ea.DTOs.update.store.ProductUpdate;
 import com.ecommerce.ea.entities.store.Product;
 
 import java.io.ByteArrayOutputStream;

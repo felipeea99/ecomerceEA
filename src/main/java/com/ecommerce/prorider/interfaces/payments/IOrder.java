@@ -17,10 +17,9 @@ public interface IOrder {
     OrderResponse editOrder(OrderUpdate orderUpdate);
     Boolean deleteOrder(UUID orderId);
 
-    List<OrderResponse> getAllArticlesBoughtByCustomerId(UUID customerId);
+    List<OrderResponse> getAllArticlesBoughtByUserId(UUID userId);
     List<OrderResponse> getAllArticlesBoughtAdmin();
-    List<OrderResponse> getAllArticlesBoughtByStoreId(UUID storeId);
-    ByteArrayOutputStream orderExcel(UUID storeId);
+    ByteArrayOutputStream orderExcel();
 
     OrderResponse ToOrderResponse(Order order);
     Order ToOrderObject(CreateOrderRequest createOrderRequest);

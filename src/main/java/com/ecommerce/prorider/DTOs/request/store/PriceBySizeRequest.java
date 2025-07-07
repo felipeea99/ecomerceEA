@@ -21,4 +21,6 @@ public class PriceBySizeRequest {
     private int sizeId;
     @Min(0)
     private BigDecimal price;
+    @Min(0)
+    private int quantity;
 }

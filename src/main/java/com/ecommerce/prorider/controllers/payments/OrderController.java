@@ -1,10 +1,8 @@
 package com.ecommerce.prorider.controllers.payments;
 
-import com.ecommerce.prorider.AOP_Functions.annotations.ValidateStoreAccess;
-import com.ecommerce.prorider.AOP_Functions.context.StoreContextHolder;
 import com.ecommerce.prorider.DTOs.request.payments.CreateOrderRequest;
 import com.ecommerce.prorider.DTOs.response.payments.OrderResponse;
-import com.ecommerce.prorider.interfaces.payments.IOrder;
+import com.ecommerce.prorider.services.payments.OrderService;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
@@ -14,9 +12,9 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/Order")
 public class OrderController {
-    private final IOrder orderService;
+    private final OrderService orderService;
 
-    public OrderController(IOrder orderService) {
+    public OrderController(OrderService orderService) {
         this.orderService = orderService;
     }
 
@@ -39,9 +37,9 @@ public class OrderController {
     }
 
     /// Retrieve all the orders base on the customerId
-    @GetMapping("/Customer/{customerId}")
-    public List<OrderResponse> getAllOrdersByCustomer(@PathVariable UUID customerId) {
-        return orderService.getAllArticlesBoughtByCustomerId(customerId);
+    @GetMapping("/{userId}")
+    public List<OrderResponse> getAllOrdersByCustomer(@PathVariable UUID userId) {
+        return orderService.getAllArticlesBoughtByUserId(userId);
     }
 
     /// Retrieve all the orders from all the stores (admin)
@@ -50,15 +48,14 @@ public class OrderController {
         return orderService.getAllArticlesBoughtAdmin();
     }
 
-    /// Retrieve all the orders from a specific store
-    @GetMapping("/Store/{storeId}")
-    public List<OrderResponse> getAllOrdersByStore(@PathVariable UUID storeId) {
-        return orderService.getAllArticlesBoughtByStoreId(storeId);
+    /// Retrieve all the orders from the database base on the userId
+    @GetMapping("/findAllArticlesByUser/{userId}")
+    public List<OrderResponse> getOrderByUserId(@PathVariable UUID userId) {
+        return orderService.getAllArticlesBoughtByUserId(userId);
     }
-    @ValidateStoreAccess
-    @GetMapping("/{storeName}/orderListExcel")
+
+    @GetMapping("/orderListExcel")
     public ByteArrayOutputStream listOrdersExcel() {
-        UUID storeId = StoreContextHolder.getStoreId();
-        return orderService.orderExcel(storeId);
+        return orderService.orderExcel();
     }
 }

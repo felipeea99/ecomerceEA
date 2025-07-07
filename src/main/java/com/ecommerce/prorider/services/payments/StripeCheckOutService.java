@@ -49,9 +49,9 @@ public class StripeCheckOutService {
                 .toList();
 
         Cart anyCart = cartList.get(0);
-        if (anyCart.getProduct().getStore() != null && !anyCart.getProduct().getStore().isOnboardingCompleted()) {
-            throw new IllegalStateException("El vendedor aún no ha completado el proceso de onboarding con Stripe.");
-        }
+//        if (anyCart.getProduct().getStore() != null && !anyCart.getProduct().getStore().isOnboardingCompleted()) {
+//            throw new IllegalStateException("El vendedor aún no ha completado el proceso de onboarding con Stripe.");
+//        }
 
 
         /// Session Data LOOP

@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class CreateOrderRequest {
     private UUID storeId;
-    private UUID customerId;
+    private UUID userId;
     private int addressId;
     private List<OrderItemRequest> items;
 }

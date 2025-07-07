@@ -1,5 +1,6 @@
 package com.ecommerce.prorider.DTOs.response.store;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,9 +21,7 @@ public class ProductResponse {
     private boolean hasSizes;
     private BigDecimal price;
     private String description;
-
-    private StoreLiteResponse store;
+    private int quantity;
     private CategoryResponse category;
     private List<PriceBySizeResponse> pricesBySize = new ArrayList<>();
-
 }

@@ -4,7 +4,6 @@ import com.ecommerce.prorider.entities.payments.Order;
 import com.ecommerce.prorider.entities.payments.PaymentStatus;
 import com.ecommerce.prorider.entities.store.StatusType;
 import com.ecommerce.prorider.repository.payments.OrderRepository;
-import com.ecommerce.prorider.services.auth.StoreService;
 import com.stripe.model.Event;
 import com.stripe.model.checkout.Session;
 import com.stripe.model.PaymentIntent;

@@ -4,14 +4,12 @@ import com.ecommerce.prorider.DTOs.request.store.PriceBySizeRequest;
 import com.ecommerce.prorider.DTOs.request.store.ProductRequest;
 import com.ecommerce.prorider.DTOs.response.store.*;
 import com.ecommerce.prorider.DTOs.update.store.ProductUpdate;
-import com.ecommerce.prorider.entities.auth.Store;
 import com.ecommerce.prorider.entities.store.Category;
 import com.ecommerce.prorider.entities.store.PriceBySize;
 import com.ecommerce.prorider.entities.store.Product;
 import com.ecommerce.prorider.exceptions.BadRequestException;
 import com.ecommerce.prorider.interfaces.store.IProduct;
 import com.ecommerce.prorider.repository.store.ProductRepository;
-import com.ecommerce.prorider.services.auth.StoreService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -28,16 +26,14 @@ import java.util.stream.Collectors;
 public class ProductService implements IProduct {
 
     private final ProductRepository productRepository;
-    private final StoreService storeService;
     private final CategoryService categoryService;
     private final PriceBySizeService priceBySizeService;
     private final SizeService sizeService;
     private final PhotoService photoService;
 
     @Autowired
-    public ProductService(ProductRepository productRepository, StoreService storeService, CategoryService categoryService, PriceBySizeService priceBySizeService, SizeService sizeService, PhotoService photoService) {
+    public ProductService(ProductRepository productRepository, CategoryService categoryService, PriceBySizeService priceBySizeService, SizeService sizeService, PhotoService photoService) {
         this.productRepository = productRepository;
-        this.storeService = storeService;
         this.categoryService = categoryService;
         this.priceBySizeService = priceBySizeService;
         this.sizeService = sizeService;
@@ -47,28 +43,28 @@ public class ProductService implements IProduct {
     ///Add Product Object
     @Override
     public ProductResponse addProduct(ProductRequest productRequest, List<PriceBySizeRequest>priceBySizeList) {
-       //Get the objects
-        Store store = storeService.findStoreByIdBaseForm(productRequest.getStoreId());
+        /// Get the "category" object
         Category category = categoryService.findCategoryByIdBaseForm(productRequest.getCategoryId());
-        //Create the Product obj
+        ///Create the Product obj
         Product product = new Product();
         product.setActive(productRequest.isActive());
-        product.setStore(store);
         product.setCategory(category);
         product.setProductName(productRequest.getProductName());
         product.setHasSizes(productRequest.isHasSizes());
-        /// Price Configuration
-        if (productRequest.isHasSizes()){
-            product.setPrice(null);
-            /// Price By Size List, this method receives a list of priceBySizeRequest and save it into the database
-        priceBySizeService.addProductSize(priceBySizeList);
-
-        }else{
+        /// Price & Quantity Configuration
+        if (!productRequest.isHasSizes()){
             product.setPrice(productRequest.getPrice());
+            product.setQuantity(productRequest.getQuantity());
+        }else{
+            /// product.quantity(0) due to is going priceBySize object will have quantity and price = null
+            product.setPrice(null);
+            product.setQuantity(0);
         }
-        // Save the product on the database and store it on "productSaved"
+        /// Save the product on the database and store it on "productSaved"
         Product productSaved = productRepository.save(product);
-        //Transform "productSaved" into the ProduceResponseType
+        /// Price By Size List, this method receives a list of priceBySizeRequest and save it into the database
+        priceBySizeService.addProductSize(priceBySizeList,productSaved);
+        ///Transform "productSaved" into the ProduceResponseType
         return this.ToProductResponse(productSaved);
     }
 
@@ -82,11 +78,11 @@ public class ProductService implements IProduct {
         //categoryId validation
         Category category = categoryService.findCategoryByIdBaseForm(productUpdate.getCategoryId());
 
-
         //Edit Changes
         product.setCategory(category);
         product.setProductName(productUpdate.getProductName());
         product.setActive(productUpdate.isActive());
+        product.setQuantity(product.getQuantity());
         product.setHasSizes(productUpdate.isHasSizes());
         product.setDescription(productUpdate.getDescription());
         //if it is true
@@ -110,6 +106,18 @@ public class ProductService implements IProduct {
         //remove the product object from the database
         productRepository.deleteById(productId);
         return true;
+    }
+
+    /// Used when an item is bought, reduce the quantity value
+    @Override
+    public ProductResponse decreaseProductByOne(Product product) {
+       Product productObj = this.findProductByIdBaseForm(product.getProductId());
+       if(product.getQuantity() == 0){
+           return null;
+       }
+       productObj.setQuantity(product.getQuantity()-1);
+       productRepository.save(productObj);
+       return ToProductResponse(productObj);
     }
 
     ///Retrieve All ProductSingle Objects for Admin Calls
@@ -250,20 +258,13 @@ public class ProductService implements IProduct {
                 for (int i = 0; i <= 3; i++) {
                     productSheet.autoSizeColumn(i);
                 }
-                // Store Name
-                Store store = storeService.findStoreByIdBaseForm(storeId);
-
-
-                String fileName = "Productos -" + store.getStoreName() + ".xls";
+                /// File Name
+                String fileName = "Productos"+ ".xls";
 
                 /// ProductSize
 
                 //retrieves all the priceBySize objects
                 List<PriceBySize> priceBySizeList = priceBySizeService.findAllProductSizesBaseForm();
-                //the "priceBySize" is filter with the ones that has the same storeId
-                List<PriceBySize> filteredList =  priceBySizeList
-                        .stream().filter(products -> products.getProduct().getStore().getStoreId().equals(storeId))
-                        .toList();
 
                 Sheet productSize = workbook.createSheet("Productos y Tallas");
 
@@ -277,7 +278,7 @@ public class ProductService implements IProduct {
 
                 /// Data PriceBySize
                 int rowCountPs = 1;
-                for (PriceBySize ps : filteredList) {
+                for (PriceBySize ps : priceBySizeList) {
                     Row dataRow = productSheet.createRow(rowCountPs++);
                     dataRow.createCell(0).setCellValue(ps.getProduct().getProductName());
                     dataRow.createCell(1).setCellValue(ps.getProduct().isActive() ? "Activo" : "Inactivo");
@@ -307,10 +308,6 @@ public class ProductService implements IProduct {
 
     @Override
     public ProductResponse ToProductResponse(Product product) {
-        /// Create the "StoreLiteResponse" Object
-        StoreLiteResponse storeLiteResponse = new StoreLiteResponse();
-        storeLiteResponse.setStoreId(product.getStore().getStoreId());
-        storeLiteResponse.setStoreName(product.getStore().getStoreName());
         /// "CategoryResponse" Initialization
         CategoryResponse categoryResponse = categoryService.ToCategoryResponse(product.getCategory());
         /// PriceBySize - List
@@ -320,7 +317,7 @@ public class ProductService implements IProduct {
         response.setProductId(product.getProductId());
         response.setProductName(product.getProductName());
         response.setActive(product.isActive());
-        response.setStore(storeLiteResponse);
+        response.setQuantity(product.getQuantity());
         response.setCategory(categoryResponse);
         response.setHasSizes(product.isHasSizes());
         response.setPrice(product.getPrice());

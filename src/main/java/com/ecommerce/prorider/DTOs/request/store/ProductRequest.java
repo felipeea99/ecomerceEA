@@ -1,6 +1,7 @@
 package com.ecommerce.prorider.DTOs.request.store;
 
 import com.ecommerce.prorider.DTOs.response.store.PriceBySizeResponse;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -28,8 +29,12 @@ public class ProductRequest {
 
     @NotNull(message = "categoryId is mandatory")
     private int categoryId;
-
+    @NotNull
+    private int quantity;
+    @NotNull
     private boolean hasSizes;
+    @Min(1)
+    @NotNull
     private BigDecimal price;
     private String description;
 

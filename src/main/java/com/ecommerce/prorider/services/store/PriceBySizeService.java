@@ -32,15 +32,20 @@ public class PriceBySizeService implements IPriceSize {
 
     /// Add a list of productSizes to the database, it is used by "productService.addProduct"
     @Override
-    public List<PriceBySizeResponse> addProductSize(List<PriceBySizeRequest> request) {
-         // Convert the list of request into PriceBySize type
-          List<PriceBySize> priceBySizeList =  request.stream()
-                  .map(this::ToPriceBySizeObj).toList();
-          // Save the objects on the database
-         List<PriceBySize> priceSavedList = priceSizeRepository.saveAll(priceBySizeList);
-          // Convert the "priceSavedList" into PriceBySizeResponse
-         return priceSavedList.stream().map(this::ToPriceBySizeResponse).toList();
+    public List<PriceBySizeResponse> addProductSize(List<PriceBySizeRequest> request, Product product) {
+        List<PriceBySize> priceBySizeList = request.stream()
+                .map(req -> {
+                    PriceBySize pbs = ToPriceBySizeObj(req);
+                    pbs.setProduct(product);
+                    return pbs;
+                }).toList();
+
+        List<PriceBySize> priceSavedList = priceSizeRepository.saveAll(priceBySizeList);
+        return priceSavedList.stream()
+                .map(this::ToPriceBySizeResponse)
+                .toList();
     }
+
 
     @Override
     public PriceBySizeResponse editProductSize(PriceBySizeUpdate update) {
@@ -55,6 +60,8 @@ public class PriceBySizeService implements IPriceSize {
          editObj.setProduct(product);
          editObj.setSize(update.getSize());
          editObj.setPrice(update.getPrice());
+         editObj.setQuantity(update.getQuantity());
+
          PriceBySize priceBySizeSaved = priceSizeRepository.save(editObj);
          return this.ToPriceBySizeResponse(priceBySizeSaved);
 
@@ -135,6 +142,7 @@ public class PriceBySizeService implements IPriceSize {
         priceSize.setSize(size);
         priceSize.setPrice(request.getPrice());
         priceSize.setProduct(product);
+        priceSize.setQuantity(request.getQuantity());
         return priceSize;
     }
 }

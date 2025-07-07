@@ -3,7 +3,6 @@ package com.ecommerce.prorider.controllers.store;
 import com.ecommerce.prorider.AOP_Functions.annotations.ValidateStoreAccess;
 import com.ecommerce.prorider.AOP_Functions.context.StoreContextHolder;
 import com.ecommerce.prorider.entities.store.ThemeSetting;
-import com.ecommerce.prorider.services.auth.StoreService;
 import com.ecommerce.prorider.services.store.ThemeSettingService;
 import org.springframework.web.bind.annotation.*;
 

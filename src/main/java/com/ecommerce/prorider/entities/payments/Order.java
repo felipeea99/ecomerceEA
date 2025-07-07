@@ -1,9 +1,8 @@
 package com.ecommerce.prorider.entities.payments;
 
+import com.ecommerce.prorider.entities.auth.UserAcc;
 import com.ecommerce.prorider.entities.store.Address;
-import com.ecommerce.prorider.entities.auth.Customer;
 import com.ecommerce.prorider.entities.store.StatusType;
-import com.ecommerce.prorider.entities.auth.Store;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,11 +30,9 @@ public class Order {
     private PaymentStatus paymentStatus;
 
     @ManyToOne
-    private Customer customer;
+    private UserAcc userAcc;
     @ManyToOne
     private Address address;
-    @ManyToOne
-    private Store store;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items;
 }

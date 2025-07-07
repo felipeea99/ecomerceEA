@@ -1,8 +1,6 @@
 package com.ecommerce.prorider.interfaces.payments;
 
 import com.ecommerce.prorider.DTOs.request.payments.SubscriptionRequest;
-import com.ecommerce.prorider.DTOs.response.payments.SubscriptionDbResponse;
-import com.ecommerce.prorider.entities.payments.SubscriptionDb;
 
 import java.util.UUID;
 

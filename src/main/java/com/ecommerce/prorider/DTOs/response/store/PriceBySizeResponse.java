@@ -17,5 +17,5 @@ public class PriceBySizeResponse {
     private ProductResponse product;
     private SizeResponse size;
     private BigDecimal price;
-
+    private int quantity;
 }

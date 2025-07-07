@@ -4,21 +4,22 @@ import com.ecommerce.prorider.DTOs.request.auth.UserAccRequest;
 import com.ecommerce.prorider.DTOs.response.auth.LoginDTO;
 import com.ecommerce.prorider.entities.auth.UserAcc;
 import com.ecommerce.prorider.services.auth.UserAccService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/user")
 public class UserAccController {
 
-    @Autowired
-    private UserAccService userAccService;
+    private final UserAccService userAccService;
+
+    public UserAccController(UserAccService userAccService) {
+        this.userAccService = userAccService;
+    }
 
     // EndPoint for registration of Users
-
-    @PostMapping("/{storeName}")
-    public Boolean register(@RequestBody UserAccRequest userAccRequest, @PathVariable String storeName){
-        return userAccService.register(userAccRequest, storeName);
+    @PostMapping("/")
+    public Boolean register(@RequestBody UserAccRequest userAccRequest){
+        return userAccService.register(userAccRequest);
     }
 
     /// EndPoint for registration of StoreUsers

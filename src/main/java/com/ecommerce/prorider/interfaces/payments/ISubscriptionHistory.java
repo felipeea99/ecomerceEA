@@ -1,9 +1,5 @@
 package com.ecommerce.prorider.interfaces.payments;
 
-import com.ecommerce.prorider.DTOs.response.payments.SubscriptionHistoryResponse;
-import com.ecommerce.prorider.entities.payments.SubscriptionDb;
-import com.ecommerce.prorider.entities.payments.SubscriptionHistory;
-
 import java.util.List;
 import java.util.UUID;
 

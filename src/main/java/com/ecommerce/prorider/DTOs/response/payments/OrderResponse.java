@@ -1,8 +1,7 @@
 package com.ecommerce.prorider.DTOs.response.payments;
 
-import com.ecommerce.prorider.DTOs.response.auth.CustomerResponse;
+import com.ecommerce.prorider.DTOs.response.auth.UserResponse;
 import com.ecommerce.prorider.DTOs.response.store.AddressResponse;
-import com.ecommerce.prorider.DTOs.response.store.StoreLiteResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,7 +24,7 @@ public class OrderResponse {
     private List<OrderItemResponse> items;
     private String storeName;
     private String paymentStatus;
-    private CustomerResponse customer;
+    private UserResponse user;
     private StoreLiteResponse store;
     private AddressResponse address;
 }

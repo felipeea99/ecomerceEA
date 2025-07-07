@@ -15,6 +15,7 @@ public interface IProduct {
     ProductResponse addProduct(ProductRequest productRequest,List<PriceBySizeRequest>priceBySizeList);
     ProductResponse editProduct(ProductUpdate productUpdate);
     Boolean deleteProduct(int productId);
+    ProductResponse decreaseProductByOne (Product product);
     List<ProductResponse> getAllProducts();
     ProductResponse findProductById(int productId);
     Product findProductByIdBaseForm(int productId);

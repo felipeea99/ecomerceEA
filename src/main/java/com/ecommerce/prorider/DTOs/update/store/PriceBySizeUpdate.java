@@ -24,4 +24,5 @@ public class PriceBySizeUpdate {
     @Min(0)
     private BigDecimal price;
     private int productId;
+    private int quantity;
 }

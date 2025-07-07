@@ -26,5 +26,5 @@ public class CartRequest {
     /// Might be Null
     private SizeResponse sizeObj;
     @NotNull
-    private UUID customerId;
+    private UUID userId;
 }

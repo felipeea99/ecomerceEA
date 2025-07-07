@@ -1,6 +1,5 @@
 package com.ecommerce.prorider.DTOs.update.payments;
 
-import com.ecommerce.prorider.entities.payments.SubscriptionDb;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

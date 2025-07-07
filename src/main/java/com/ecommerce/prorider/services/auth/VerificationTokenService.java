@@ -1,10 +1,8 @@
 package com.ecommerce.prorider.services.auth;
 
-import com.ecommerce.prorider.entities.auth.Store;
 import com.ecommerce.prorider.entities.auth.VerificationToken;
 import com.ecommerce.prorider.exceptions.BadRequestException;
 import com.ecommerce.prorider.interfaces.auth.IVerificationToken;
-import com.ecommerce.prorider.repository.auth.StoreRepository;
 import com.ecommerce.prorider.repository.auth.VerificationTokenRepository;
 
 import java.time.LocalDateTime;

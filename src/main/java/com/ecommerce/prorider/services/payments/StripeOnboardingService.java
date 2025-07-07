@@ -1,7 +1,5 @@
 package com.ecommerce.prorider.services.payments;
 
-import com.ecommerce.prorider.entities.auth.Store;
-import com.ecommerce.prorider.services.auth.StoreService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.*;

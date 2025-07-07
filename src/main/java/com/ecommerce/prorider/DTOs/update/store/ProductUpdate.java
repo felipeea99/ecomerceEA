@@ -31,7 +31,8 @@ public class ProductUpdate {
 
     @NotNull(message = "categoryId is mandatory")
     private int categoryId;
-
+    @NotBlank
+    private int quantity;
     private boolean hasSizes;
     private String description;
 

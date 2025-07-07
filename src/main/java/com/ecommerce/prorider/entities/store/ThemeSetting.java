@@ -1,6 +1,5 @@
 package com.ecommerce.prorider.entities.store;
 
-import com.ecommerce.prorider.entities.auth.Store;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;

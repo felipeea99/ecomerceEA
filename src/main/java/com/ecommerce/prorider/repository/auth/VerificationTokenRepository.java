@@ -1,6 +1,5 @@
 package com.ecommerce.prorider.repository.auth;
 
-import com.ecommerce.prorider.entities.auth.Store;
 import com.ecommerce.prorider.entities.auth.VerificationToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

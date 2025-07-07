@@ -4,11 +4,10 @@ import com.ecommerce.prorider.DTOs.request.store.AddressRequest;
 import com.ecommerce.prorider.DTOs.response.store.AddressResponse;
 import com.ecommerce.prorider.DTOs.update.store.AddressUpdate;
 import com.ecommerce.prorider.entities.store.Address;
-import com.ecommerce.prorider.entities.auth.Customer;
 import com.ecommerce.prorider.exceptions.BadRequestException;
 import com.ecommerce.prorider.interfaces.store.IAddress;
 import com.ecommerce.prorider.repository.store.AddressRepository;
-import com.ecommerce.prorider.services.auth.CustomerService;
+import com.ecommerce.prorider.services.auth.UserAccService;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,11 +19,11 @@ import java.util.UUID;
 public class AddressService implements IAddress {
 
     private final AddressRepository addressRepository;
-    private final CustomerService customerService;
+    private final UserAccService userAccService;
 
-    public AddressService(AddressRepository addressRepository, CustomerService customerService){
+    public AddressService(AddressRepository addressRepository, UserAccService userAccService){
         this.addressRepository = addressRepository;
-        this.customerService = customerService;
+        this.userAccService = userAccService;
     }
 
     @Override
@@ -36,7 +35,7 @@ public class AddressService implements IAddress {
     /// Retrieve an Address Object from the database using a addressId
     @Override
     @Async
-    public AddressResponse findAddressById(int addressId, UUID customerId) {
+    public AddressResponse findAddressById(int addressId) {
         Address addressObj = this.findAddressByIdBaseForm(addressId);
         //Transform the object from Address to AddressResponse and return it
         return this.ToAddressResponse(addressObj);
@@ -106,7 +105,7 @@ public class AddressService implements IAddress {
     @Override
     public Address ToAddressObj(AddressRequest addressRequest) {
         //User validation
-      Customer customer = customerService.findCustomerById(addressRequest.getCustomerId());
+      UserAccService user = userAccService.findByUserId(addressRequest.getCustomerId());
         //Transformation
         Address address = new Address();
         address.setCountry(addressRequest.getCountry());

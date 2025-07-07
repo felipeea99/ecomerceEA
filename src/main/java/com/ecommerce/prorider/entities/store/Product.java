@@ -1,8 +1,8 @@
 package com.ecommerce.prorider.entities.store;
 
 
-import com.ecommerce.prorider.entities.auth.Store;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -25,17 +25,16 @@ public class Product {
     private int productId;
     @NotBlank
     private String productName;
-
+    @NotBlank
+    private int quantity;
+    @NotNull
     private boolean isActive;
+    @NotNull
     private boolean hasSizes;
+    @NotNull
+    @Min(0)
     private BigDecimal price;
     private String description;
-
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name = "storeId")
-    private Store store;
-
     @NotNull
     @ManyToOne
     @JoinColumn(name = "categoryId")

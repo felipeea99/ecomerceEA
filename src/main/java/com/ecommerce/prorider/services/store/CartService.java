@@ -5,12 +5,10 @@ import com.ecommerce.prorider.DTOs.response.store.CartResponse;
 import com.ecommerce.prorider.DTOs.response.store.ProductResponse;
 import com.ecommerce.prorider.DTOs.response.store.SizeResponse;
 import com.ecommerce.prorider.DTOs.update.store.CartUpdate;
-import com.ecommerce.prorider.entities.auth.Customer;
 import com.ecommerce.prorider.entities.store.*;
 import com.ecommerce.prorider.exceptions.BadRequestException;
 import com.ecommerce.prorider.interfaces.store.ICart;
 import com.ecommerce.prorider.repository.store.CartRepository;
-import com.ecommerce.prorider.services.auth.CustomerService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

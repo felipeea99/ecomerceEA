@@ -4,12 +4,13 @@ import com.ecommerce.prorider.DTOs.request.store.PriceBySizeRequest;
 import com.ecommerce.prorider.DTOs.response.store.PriceBySizeResponse;
 import com.ecommerce.prorider.DTOs.update.store.PriceBySizeUpdate;
 import com.ecommerce.prorider.entities.store.PriceBySize;
+import com.ecommerce.prorider.entities.store.Product;
 
 import java.util.List;
 import java.util.UUID;
 
 public interface IPriceSize {
-    List<PriceBySizeResponse> addProductSize(List<PriceBySizeRequest> request);
+    List<PriceBySizeResponse> addProductSize(List<PriceBySizeRequest> request, Product product);
     PriceBySizeResponse editProductSize(PriceBySizeUpdate update);
     Boolean deleteProductSize(int priceSizeId);
     List<PriceBySizeResponse> findAllProductSizes();

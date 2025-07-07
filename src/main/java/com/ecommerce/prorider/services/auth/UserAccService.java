@@ -8,8 +8,8 @@ import com.ecommerce.prorider.entities.auth.UserAccPrincipal;
 import com.ecommerce.prorider.exceptions.BadRequestException;
 import com.ecommerce.prorider.exceptions.UnauthorizedException;
 import com.ecommerce.prorider.interfaces.auth.IUserAcc;
+import com.ecommerce.prorider.repository.auth.UserRepository;
 import com.ecommerce.prorider.services.store.JWTService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,26 +21,27 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.UUID;
 
 @Service
-public class UserAccService {
+public class UserAccService implements IUserAcc {
 
-    @Autowired
-    private IUserAcc _userAcc;
-    @Autowired
-    private JWTService jwtService;
-    @Autowired
-    AuthenticationManager authManager;
-    @Autowired
-    private CustomerService customerService;
+    private final JWTService jwtService;
+    private final AuthenticationManager authManager;
+    private final UserRepository userAccRepository;
 
     //Password encryption object and the strength is the rounds hashed
-    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+    private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
+    public UserAccService(JWTService jwtService, AuthenticationManager authManager, UserRepository userAccRepository) {
+        this.jwtService = jwtService;
+        this.authManager = authManager;
+        this.userAccRepository = userAccRepository;
+    }
 
     /// User-Store Creation, returns the object saved to be available to used on the StoreService on "createStore" method
     @Transactional
     public UserAcc registerStoreUser(UserAccRequest userAccRequest){
         /// Email Validation, checks if exist or not
         String email = userAccRequest.getEmail().toLowerCase();
-        UserAcc existingUser = _userAcc.findByUserName(email);
+        UserAcc existingUser = userAccRepository.findByUserName(email);
         if (existingUser != null) {
             throw new BadRequestException("Email already exists");
         }
@@ -54,15 +55,15 @@ public class UserAccService {
         ///password encryption
         userAccRequest.setPassword(encoder.encode(userAccRequest.getPassword()));
         UserAcc userAcc = ToUserObject(userAccRequest);
-        return _userAcc.save(userAcc);
+        return userAccRepository.save(userAcc);
     }
 
     /// User Creation, receives a storeName from the route, then it creates a customer object on the database (customerId, User, store)
     @Transactional
-    public Boolean register(UserAccRequest userAccRequest, String storeName) {
+    public Boolean register(UserAccRequest userAccRequest) {
         /// Email Validation, checks if exist or not
         String email = userAccRequest.getEmail().toLowerCase();
-        UserAcc existingUser = _userAcc.findByUserName(email);
+        UserAcc existingUser = userAccRepository.findByUserName(email);
         if (existingUser != null) {
             throw new BadRequestException("Email already exists");
         }
@@ -77,15 +78,8 @@ public class UserAccService {
         ///password encryption & Save
         userAccRequest.setPassword(encoder.encode(userAccRequest.getPassword()));
         UserAcc userAcc = ToUserObject(userAccRequest);
-        _userAcc.save(userAcc);
+        userAccRepository.save(userAcc);
 
-        //Create the Customer Object
-       Boolean result = customerService.customerCreationVerification(userAcc.getUserId(), storeName);
-        if (result){
-            throw new BadRequestException("Customer already exists in that store");
-        }else{
-            customerService.addCustomer(userAcc,storeName);
-        }
         return true;
     }
 
@@ -153,9 +147,13 @@ public class UserAccService {
         return userAcc;
     }
 
+    @Override
+    public UserAcc findByUserName(String username) {
+        return userAccRepository.findByUserName(username);
+    }
 
-
-
-
-
+    @Override
+    public UserAcc findByUserId(UUID userId) {
+       return userAccRepository.findByUserId(userId);
+    }
 }

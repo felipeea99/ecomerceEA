@@ -10,7 +10,7 @@ import java.util.UUID;
 
 public interface IAddress {
     Address findAddressByIdBaseForm(int addressId);
-    AddressResponse findAddressById(int addressId, UUID customerId);
+    AddressResponse findAddressById(int addressId);
     List<AddressResponse> findAddressesByUserId(UUID userId);
     AddressResponse addAddress(AddressRequest addressRequest);
     Boolean deleteAddress(int addressId);

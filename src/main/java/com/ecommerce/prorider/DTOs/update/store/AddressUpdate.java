@@ -30,5 +30,5 @@ public class AddressUpdate {
     @NotBlank(message = "town is mandatory")
     private String town;
     @NotBlank(message = "town is mandatory")
-    private UUID customerId;
+    private UUID userId;
 }

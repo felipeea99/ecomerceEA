@@ -18,6 +18,6 @@ public class AddressResponse {
     private String number;
     private String colony;
     private String town;
-    private UUID customerId;
+    private UUID userId;
 
 }

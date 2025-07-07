@@ -2,26 +2,22 @@ package com.ecommerce.prorider.services.payments;
 
 import com.ecommerce.prorider.DTOs.request.payments.OrderItemRequest;
 import com.ecommerce.prorider.DTOs.request.payments.CreateOrderRequest;
-import com.ecommerce.prorider.DTOs.response.auth.CustomerResponse;
 import com.ecommerce.prorider.DTOs.response.auth.UserResponse;
 import com.ecommerce.prorider.DTOs.response.payments.OrderItemResponse;
 import com.ecommerce.prorider.DTOs.response.payments.OrderResponse;
 import com.ecommerce.prorider.DTOs.update.payments.OrderUpdate;
-import com.ecommerce.prorider.entities.auth.Customer;
+import com.ecommerce.prorider.entities.auth.UserAcc;
 import com.ecommerce.prorider.entities.store.Address;
 import com.ecommerce.prorider.entities.store.Product;
 import com.ecommerce.prorider.entities.store.StatusType;
-import com.ecommerce.prorider.entities.auth.Store;
 import com.ecommerce.prorider.entities.payments.Order;
 import com.ecommerce.prorider.entities.payments.OrderItem;
 import com.ecommerce.prorider.exceptions.BadRequestException;
 import com.ecommerce.prorider.interfaces.payments.IOrder;
 import com.ecommerce.prorider.repository.payments.OrderRepository;
-import com.ecommerce.prorider.services.auth.CustomerService;
 import com.ecommerce.prorider.services.auth.UserAccService;
 import com.ecommerce.prorider.services.store.AddressService;
 import com.ecommerce.prorider.services.store.ProductService;
-import com.ecommerce.prorider.services.auth.StoreService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -39,18 +35,14 @@ import java.util.UUID;
 public class OrderService implements IOrder {
 
     private final OrderRepository orderRepository;
-    private final StoreService storeService;
     private final ProductService productService;
-    private final CustomerService customerService;
     private final AddressService addressService;
     private final  OrderItemService orderItemService;
     private final UserAccService userAccService;
 
-    public OrderService(OrderRepository orderRepository, StoreService storeService, ProductService productService, CustomerService customerService, AddressService addressService, OrderItemService orderItemService, UserAccService userAccService) {
+    public OrderService(OrderRepository orderRepository, ProductService productService, AddressService addressService, OrderItemService orderItemService, UserAccService userAccService) {
         this.orderRepository = orderRepository;
-        this.storeService = storeService;
         this.productService = productService;
-        this.customerService = customerService;
         this.addressService = addressService;
         this.orderItemService = orderItemService;
         this.userAccService = userAccService;
@@ -58,17 +50,14 @@ public class OrderService implements IOrder {
 
     @Override
     public OrderResponse createOrder(CreateOrderRequest request) {
-        /// Search the StoreID and save it on the "store" variable & same to customerId on "customer" variable & addressId same
-        Store store = storeService.findStoreByIdBaseForm(request.getStoreId());
-        Customer customer = customerService.findCustomerById(request.getCustomerId());
+        /// Retrieve the address & userResponse object base on the request.addressId()
         Address address = addressService.findAddressByIdBaseForm(request.getAddressId());
-
+        UserAcc user = userAccService.findByUserId(request.getUserId());
         /// Creates an Order Object
         Order order = new Order();
         order.setStatus(StatusType.PREPARING);
         order.setPaymentDate(LocalDateTime.now());
-        order.setStore(store);
-        order.setCustomer(customer);
+        order.setUserAcc(user);
         order.setAddress(address);
         /// Creates the OrderItem List
         List<OrderItem> items = new ArrayList<>();
@@ -132,8 +121,11 @@ public class OrderService implements IOrder {
     }
 
     @Override
-    public List<OrderResponse> getAllArticlesBoughtByCustomerId(UUID customerId) {
-        return List.of();
+    public List<OrderResponse> getAllArticlesBoughtByUserId(UUID userId) {
+        UserAcc userAcc = userAccService.findByUserId(userId);
+        List<Order> order = orderRepository.findAllItemsBoughtByUser(userAcc);
+
+        return order.stream().map(this::ToOrderResponse).toList();
     }
 
     @Override
@@ -144,71 +136,63 @@ public class OrderService implements IOrder {
         return orderList.stream().map(this::ToOrderResponse).toList();
     }
 
-    @Override
-    public List<OrderResponse> getAllArticlesBoughtByStoreId(UUID storeId) {
-        return orderRepository.findAllItemsByStoreId(storeId)
-                .stream().map(this::ToOrderResponse)
-                .toList();
-    }
 
     @Override
-    public ByteArrayOutputStream orderExcel(UUID storeId) {
+    public ByteArrayOutputStream orderExcel() {
         try (Workbook workbook = new HSSFWorkbook()) {
+            /// Create the Sheet
             Sheet sheet = workbook.createSheet("Orders");
-
-            // Headers
+            /// Headers
             Row header = sheet.createRow(0);
             header.createCell(0).setCellValue("Fecha de pago");
             header.createCell(1).setCellValue("Total");
             header.createCell(2).setCellValue("Estado");
             header.createCell(3).setCellValue("Estado de pago");
-            header.createCell(4).setCellValue("Id de orden");
+            header.createCell(4).setCellValue("Id de Orden");
             header.createCell(5).setCellValue("Cliente");
             header.createCell(6).setCellValue("Dirección");
             header.createCell(7).setCellValue("Productos");
 
-            // Obtener lista de órdenes del storeId (deberías tener un repositorio para esto)
-            List<Order> orders = orderRepository.findAllItemsByStoreId(storeId);
+            /// Retrieve all the orders
+            List<Order> orders = orderRepository.findAll();
 
             int rowCount = 1;
             for (Order order : orders) {
                 Row row = sheet.createRow(rowCount++);
 
-                // Fecha de pago, evitar null
+                /// Payment date & avoid null
                 String paymentDateStr = order.getPaymentDate() != null ? order.getPaymentDate().toString() : "N/A";
                 row.createCell(0).setCellValue(paymentDateStr);
 
-                // Total
+                /// Total
                 row.createCell(1).setCellValue(order.getTotalAmount() != null ? order.getTotalAmount().doubleValue() : 0.0);
-
-                // Estado
+                /// Status
                 row.createCell(2).setCellValue(order.getStatus() != null ? order.getStatus().toString() : "N/A");
-
-                // Estado de pago
+                /// PaymentStatus
                 row.createCell(3).setCellValue(order.getPaymentStatus() != null ? order.getPaymentStatus().toString() : "N/A");
-
-                // Id de orden
+                /// OrderId
                 row.createCell(4).setCellValue(order.getOrderId().toString());
 
-                // Cliente (nombre completo)
-                if (order.getCustomer() != null && order.getCustomer().getUser() != null) {
-                    var user = order.getCustomer().getUser();
+                /// Get Full Name of the client
+                if (order.getUserAcc() != null) {
+                    UserAcc user = order.getUserAcc();
                     String fullName = user.getName() + " " + user.getUserLastName1() + " " + user.getUserLastName2();
                     row.createCell(5).setCellValue(fullName);
                 } else {
+                    /// if it does not exist "N/A"
                     row.createCell(5).setCellValue("N/A");
                 }
 
-                // Full Address
+                /// Full Address
                 if (order.getAddress() != null) {
-                    var addr = order.getAddress();
-                    String fullAddress = addr.getStreet() + " " + addr.getNumber() + " " + addr.getColony() + " " + addr.getTown() + " " + addr.getCountry();
+                    var address = order.getAddress();
+                    String fullAddress = address.getStreet() + " " + address.getNumber() + " " + address.getColony() + " " + address.getTown() + " " + address.getCountry();
                     row.createCell(6).setCellValue(fullAddress);
                 } else {
                     row.createCell(6).setCellValue("N/A");
                 }
 
-                // Productos: concatenar nombres y cantidades de OrderItems
+                /// Productos: concatenar nombres y cantidades de OrderItems
                 if (order.getItems() != null && !order.getItems().isEmpty()) {
                     StringBuilder products = new StringBuilder();
                     for (OrderItem item : order.getItems()) {
@@ -216,7 +200,7 @@ public class OrderService implements IOrder {
                         int quantity = item.getQuantity();
                         products.append(productName).append(" (x").append(quantity).append("), ");
                     }
-                    // eliminar última coma y espacio
+                    /// delete the last comma and the space
                     String productStr = products.length() > 2 ? products.substring(0, products.length() - 2) : "";
                     row.createCell(7).setCellValue(productStr);
                 } else {
@@ -224,12 +208,12 @@ public class OrderService implements IOrder {
                 }
             }
 
-            // Auto-ajustar columnas
+            /// Auto-adjust columns
             for (int i = 0; i <= 7; i++) {
                 sheet.autoSizeColumn(i);
             }
 
-            // Generar ByteArrayOutputStream para retorno
+            /// Generate ByteArrayOutputStream to return it
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             workbook.write(outputStream);
             return outputStream;
@@ -253,14 +237,10 @@ public class OrderService implements IOrder {
         orderResponse.setPaymentDate(order.getPaymentDate());
         orderResponse.setPaymentStatus(order.getPaymentStatus().toString());
         orderResponse.setTotalAmount(order.getTotalAmount());
-        orderResponse.setStoreName(order.getStore().getStoreName());
         /// CustomerResponse & Address validation
-        UserResponse userResponse = userAccService.ToUserResponse(order.getCustomer().getUser());
-        CustomerResponse customerResponse = new CustomerResponse();
-        customerResponse.setCustomerId(order.getCustomer().getCustomerId());
-        customerResponse.setUser(userResponse);
-        if (order.getCustomer() != null)
-            orderResponse.setCustomer(customerResponse);
+        UserResponse userResponse = userAccService.ToUserResponse(order.getUserAcc());
+        if (userResponse != null)
+            orderResponse.setUser(userResponse);
         /// "Address" object initialization
         if (order.getAddress() != null)
           orderResponse.setAddress(addressService.ToAddressResponse(order.getAddress()));
@@ -269,12 +249,9 @@ public class OrderService implements IOrder {
 
     @Override
     public Order ToOrderObject(CreateOrderRequest createOrderRequest) {
-        Store store = storeService.findStoreByIdBaseForm(createOrderRequest.getStoreId());
-
         Order order = new Order();
         order.setStatus(StatusType.PREPARING);
         order.setPaymentDate(LocalDateTime.now());
-        order.setStore(store);
 
         List<OrderItem> items = new ArrayList<>();
         BigDecimal total = BigDecimal.ZERO;

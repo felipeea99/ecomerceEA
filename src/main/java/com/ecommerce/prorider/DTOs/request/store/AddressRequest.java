@@ -25,6 +25,6 @@ public class AddressRequest {
     private String colony;
     @NotBlank(message = "town is mandatory")
     private String town;
-    @NotBlank(message = "customerId is mandatory")
-    private UUID customerId;
+    @NotBlank(message = "userId is mandatory")
+    private UUID userId;
 }

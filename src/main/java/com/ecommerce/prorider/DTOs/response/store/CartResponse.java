@@ -20,5 +20,5 @@ public class CartResponse {
     private boolean isSize;
     /// Might be Null
     private SizeResponse sizeObj;
-    private UUID customerId;
+    private UUID userId;
 }
